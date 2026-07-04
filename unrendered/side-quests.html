@@ -1,3 +1,269 @@
 <div class="{{HIDDEN}} page" data-nav="{{SHOW_NAV}}" id="side-quests">
-    <h2>Side Quests</h2>
+    <div class="map-viewport" id="map-viewport">
+        <div class="map-strip" id="map-strip"></div>
+    </div>
+    <div class="quest-tooltip hidden" id="quest-tooltip"></div>
+
+    <div class="quest-panel" id="quest-panel">
+        <div class="quest-panel-accent" id="quest-panel-accent"></div>
+        <button class="quest-panel-close" id="quest-panel-close" aria-label="Close">&times;</button>
+        <h3 id="quest-panel-title"></h3>
+        <div class="quest-photos" id="quest-photos"></div>
+        <p id="quest-panel-text"></p>
+    </div>
+
+    <script>
+    (function () {
+        // ── Quest countries ─────────────────────────────────────────────
+        // Countries listed here get coloured in and become clickable.
+        // 'flag' is an ISO code — the country is filled with its national
+        // flag from /assets/flags/<code>.png (download to that folder).
+        // 'colour' backs the flag (shows through any transparency) and
+        // tints the panel accent bar.
+        // 'images' is a list of photo urls shown in the panel (placeholder
+        // tiles appear for any missing).
+        var QUESTS = {
+            'Nepal': {
+                flag: 'np',
+                colour: '#E07A5F',
+                title: 'Nepal',
+                text: 'Placeholder story — trekking tea houses, prayer flags and a borrowed guitar somewhere on the Annapurna circuit. Replace this text with the real quest.',
+                images: []
+            },
+        };
+        var PALETTE = ['#E07A5F', '#81B29A', '#F2CC8F', '#7A9CC6', '#D48CB3', '#9A8C98'];
+
+        var page = document.getElementById('side-quests');
+        var viewport = document.getElementById('map-viewport');
+        var strip = document.getElementById('map-strip');
+        var tooltip = document.getElementById('quest-tooltip');
+        var panel = document.getElementById('quest-panel');
+        var accentEl = document.getElementById('quest-panel-accent');
+        var titleEl = document.getElementById('quest-panel-title');
+        var photosEl = document.getElementById('quest-photos');
+        var textEl = document.getElementById('quest-panel-text');
+        var ASPECT = 1000 / 535;   // world-map.svg viewBox ratio
+
+        // ── Side panel (slides in from the left) ────────────────────────
+        function openPanel(name) {
+            var q = QUESTS[name];
+            if (!q) return;
+            titleEl.textContent = q.title || name;
+            textEl.textContent = q.text || '';
+            accentEl.style.backgroundColor = q.colour || '';
+            photosEl.innerHTML = '';
+            var imgs = q.images || [];
+            var slots = Math.max(imgs.length, 2);   // always leave photo room
+            for (var i = 0; i < slots; i++) {
+                if (imgs[i]) {
+                    var img = document.createElement('img');
+                    img.src = imgs[i];
+                    img.alt = (q.title || name) + ' photo';
+                    photosEl.appendChild(img);
+                } else {
+                    var ph = document.createElement('div');
+                    ph.className = 'quest-photo-ph';
+                    ph.textContent = 'Photo';
+                    photosEl.appendChild(ph);
+                }
+            }
+            panel.classList.add('open');
+        }
+        function closePanel() {
+            panel.classList.remove('open');
+        }
+        document.getElementById('quest-panel-close').addEventListener('click', closePanel);
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') closePanel();
+        });
+
+        // ── Fill the viewport below the nav exactly ─────────────────────
+        function sizePage() {
+            var nav = document.querySelector('main > nav');
+            var navH = (nav && nav.offsetHeight) || 0;
+            page.style.setProperty('--sq-h', (window.innerHeight - navH) + 'px');
+        }
+
+        // ── Endless horizontal pan (wraps) + clamped vertical pan ───────
+        var mapW = 0;              // pixel width of one 360° copy
+        var mapH = 0;              // pixel height of the strip
+        var offset = 0;            // horizontal pan, wrapped to [0, mapW)
+        var offsetY = 0;           // vertical pan, clamped to the map
+        var vel = 0;               // inertia velocity
+        var dragging = false;
+        var moved = 0;             // distance since pointerdown (click guard)
+        var lastX = 0, lastY = 0;
+        var placedY = false;
+
+        function clampY() {
+            var vh = viewport.clientHeight;
+            if (mapH <= vh) {
+                offsetY = -(vh - mapH) / 2;   // shorter than viewport: centre it
+            } else {
+                offsetY = Math.max(0, Math.min(mapH - vh, offsetY));
+            }
+        }
+
+        function layout() {
+            sizePage();
+            var vh = viewport.clientHeight;
+            var vw = viewport.clientWidth;
+            if (!vh || !vw) return;
+            var w = vw;                       // world spans the full width
+            var h = w / ASPECT;
+            if (h < vh) {                     // very tall window: cover by height
+                h = vh;
+                w = h * ASPECT;
+            }
+            mapW = w;
+            mapH = h;
+            strip.style.height = h + 'px';
+            strip.style.top = '0px';
+            strip.querySelectorAll('svg').forEach(function (s) {
+                s.style.width = w + 'px';
+                s.style.height = h + 'px';
+            });
+            if (!placedY && mapH > 0) {
+                placedY = true;
+                offsetY = (mapH - vh) / 2;    // start looking at the middle
+            }
+            clampY();
+        }
+
+        var AUTO_DRIFT = 0.25;     // px per frame — slow constant travel
+
+        function tick() {
+            if (!dragging) {
+                if (Math.abs(vel) > 0.05) {
+                    offset += vel;
+                    vel *= 0.94;   // glide to a stop after release
+                }
+                offset -= AUTO_DRIFT;   // ambient drift (map slides right)
+            }
+            if (mapW > 0) {
+                offset = ((offset % mapW) + mapW) % mapW;
+                // three tiled copies — the window always views the middle one,
+                // so cross-dateline overflow is provided on both sides
+                strip.style.transform = 'translate3d(' + (-(offset + mapW)) + 'px,' + (-offsetY) + 'px,0)';
+            }
+            requestAnimationFrame(tick);
+        }
+
+        // Drag is tracked on window (no pointer capture — capture would
+        // retarget clicks away from the country paths and break them).
+        viewport.addEventListener('pointerdown', function (e) {
+            dragging = true;
+            moved = 0;
+            vel = 0;
+            lastX = e.clientX;
+            lastY = e.clientY;
+            viewport.classList.add('grabbing');
+        });
+        window.addEventListener('pointermove', function (e) {
+            if (!dragging) return;
+            var dx = e.clientX - lastX;
+            var dy = e.clientY - lastY;
+            lastX = e.clientX;
+            lastY = e.clientY;
+            offset -= dx;
+            offsetY -= dy;
+            clampY();
+            vel = -dx;
+            moved += Math.abs(dx) + Math.abs(dy);
+        });
+        function endDrag() {
+            dragging = false;
+            viewport.classList.remove('grabbing');
+        }
+        window.addEventListener('pointerup', endDrag);
+        window.addEventListener('pointercancel', endDrag);
+        viewport.addEventListener('wheel', function (e) {
+            offset += e.deltaX;
+            offsetY += e.deltaY;
+            clampY();
+        }, { passive: true });
+
+        // ── Tooltip + quest clicks (delegated — covers both copies) ─────
+        var canHover = window.matchMedia('(hover: hover)').matches;
+        strip.addEventListener('mousemove', function (e) {
+            if (!canHover) return;
+            var t = e.target;
+            if (t.classList && t.classList.contains('country')) {
+                tooltip.textContent = t.getAttribute('data-name');
+                tooltip.classList.remove('hidden');
+                tooltip.style.left = (e.clientX + 14) + 'px';
+                tooltip.style.top = (e.clientY + 18) + 'px';
+            } else {
+                tooltip.classList.add('hidden');
+            }
+        });
+        strip.addEventListener('mouseleave', function () {
+            tooltip.classList.add('hidden');
+        });
+        strip.addEventListener('click', function (e) {
+            if (moved > 6) return;     // it was a drag, not a click
+            var t = e.target;
+            if (t.classList && t.classList.contains('quest')) {
+                openPanel(t.getAttribute('data-name'));
+            }
+        });
+
+        // ── Load the map once, the first time the page is shown ─────────
+        var loaded = false;
+        function ensureMap() {
+            if (loaded || page.classList.contains('hidden')) return;
+            loaded = true;
+            fetch('/assets/world-map.svg')
+                .then(function (r) { return r.text(); })
+                .then(function (svg) {
+                    strip.innerHTML = svg + svg + svg;   // three copies = seamless loop
+                    var SVGNS = 'http://www.w3.org/2000/svg';
+                    var firstSvg = strip.querySelector('svg');
+                    var defs = document.createElementNS(SVGNS, 'defs');
+                    firstSvg.insertBefore(defs, firstSvg.firstChild);
+                    var names = Object.keys(QUESTS);
+                    names.forEach(function (name, i) {
+                        var q = QUESTS[name];
+                        var els = strip.querySelectorAll('.country[data-name="' + name + '"]');
+                        if (!els.length) { console.warn('Quest country not on map:', name); return; }
+                        var colour = q.colour || PALETTE[i % PALETTE.length];
+                        var fill = colour;
+                        if (q.flag) {
+                            // Flag pattern pinned to the country's bounding box,
+                            // scaled to cover it (slice) — the path clips it to
+                            // the country silhouette.
+                            var bb = els[0].getBBox();
+                            var pid = 'flag-' + q.flag + '-' + i;
+                            var pat = document.createElementNS(SVGNS, 'pattern');
+                            pat.setAttribute('id', pid);
+                            pat.setAttribute('patternUnits', 'userSpaceOnUse');
+                            pat.setAttribute('x', bb.x);
+                            pat.setAttribute('y', bb.y);
+                            pat.setAttribute('width', bb.width);
+                            pat.setAttribute('height', bb.height);
+                            var img = document.createElementNS(SVGNS, 'image');
+                            img.setAttribute('href', '/assets/flags/' + q.flag + '.png');
+                            img.setAttribute('width', bb.width);
+                            img.setAttribute('height', bb.height);
+                            img.setAttribute('preserveAspectRatio', 'xMidYMid slice');
+                            pat.appendChild(img);
+                            defs.appendChild(pat);
+                            fill = 'url(#' + pid + ')';
+                        }
+                        els.forEach(function (p) {
+                            p.classList.add('quest');
+                            p.style.fill = fill;
+                        });
+                    });
+                    layout();
+                });
+        }
+        new MutationObserver(function () { ensureMap(); layout(); })
+            .observe(page, { attributes: true, attributeFilter: ['class'] });
+        window.addEventListener('resize', layout);
+        sizePage();
+        ensureMap();
+        tick();
+    })();
+    </script>
 </div>

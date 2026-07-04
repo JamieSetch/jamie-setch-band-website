@@ -69,7 +69,7 @@
 
     <div class="signup-banner" id="signup-banner" onclick="site.navigateTo('sign-up')">
         <canvas id="murmuration" class="murmuration"></canvas>
-        <span class="signup-banner-text">Become a Starling</span>
+        <span class="signup-banner-text" id="signup-banner-text">Become a Starling</span>
     </div>
 
     <script>
@@ -169,16 +169,27 @@
         window.addEventListener('resize', resize);
         tick();
 
-        // ── Show banner only while the Music page is the visible one ───────
+        // ── Show banner on selected pages, with page-specific text ─────────
         // Nav clicks call main.js's internal navigateTo (not site.navigateTo),
         // so we watch the page divs directly — robust to any navigation path.
         var banner = document.getElementById('signup-banner');
+        var bannerText = document.getElementById('signup-banner-text');
+        var BANNER_PAGES = {
+            'music': 'Become a Starling',
+            'side-quests': 'Join an Adventure'
+        };
         function visiblePageId() {
             var el = document.querySelector('.page:not(.hidden)');
             return el ? el.id : '';
         }
         function updateBanner() {
-            banner.style.transform = (visiblePageId() === 'music') ? 'translateY(0)' : 'translateY(100%)';
+            var text = BANNER_PAGES[visiblePageId()];
+            if (text) {
+                bannerText.textContent = text;
+                banner.style.transform = 'translateY(0)';
+            } else {
+                banner.style.transform = 'translateY(100%)';
+            }
         }
         var mo = new MutationObserver(updateBanner);
         document.querySelectorAll('.page').forEach(function (p) {

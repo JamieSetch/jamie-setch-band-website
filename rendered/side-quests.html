@@ -576,7 +576,170 @@ nav > .nav-store > a.selected {
     text-transform: uppercase;
     --hover-speed: 0.5s;
     padding: 0.3em 0.6em;
-}</style>
+}#side-quests {
+    /* fills the viewport below the nav — height set by script (--sq-h) */
+    position: relative;
+    height: var(--sq-h, calc(100dvh - 4em));
+    box-sizing: border-box;
+    background-color: var(--primary-grey);
+    color: white;
+    overflow: hidden;
+}
+
+.map-viewport {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    cursor: grab;
+    touch-action: none;
+}
+
+.map-viewport.grabbing {
+    cursor: grabbing;
+}
+
+.map-strip {
+    position: absolute;
+    left: 0;
+    display: flex;
+    width: max-content;
+    will-change: transform;
+}
+
+.map-strip svg {
+    display: block;
+    flex: 0 0 auto;
+    overflow: visible;   /* dateline-crossing land bleeds onto the next copy */
+}
+
+.map-strip .country {
+    fill: #454545;
+    stroke: #ffffff;
+    stroke-width: 0.35;
+    transition: 0.25s fill;
+}
+
+.map-strip .country:hover {
+    fill: #545454;
+}
+
+.map-strip .grat {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.07);
+    stroke-width: 0.5;
+}
+
+.map-strip .country.quest {
+    cursor: pointer;
+}
+
+.map-strip .country.quest:hover {
+    filter: brightness(1.25);
+}
+
+.quest-tooltip {
+    position: fixed;
+    pointer-events: none;
+    background-color: var(--primary-white);
+    color: var(--primary-grey);
+    font-size: 0.55em;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0.45em 0.9em;
+    white-space: nowrap;
+    z-index: 9;
+}
+
+.quest-panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: min(420px, 85vw);
+    box-sizing: border-box;
+    background-color: var(--primary-white);
+    color: var(--primary-grey);
+    padding: 2.2em 2em 2em;
+    overflow-y: auto;
+    transform: translateX(-105%);
+    transition: 0.35s transform;
+    z-index: 10;
+    box-shadow: 8px 0 30px rgba(0, 0, 0, 0.35);
+}
+
+.quest-panel.open {
+    transform: translateX(0);
+}
+
+.quest-panel-accent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background-color: var(--primary-clr);
+}
+
+.quest-panel h3 {
+    font: inherit;
+    font-size: 1.2em;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin: 0 0 1em;
+}
+
+.quest-photos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8em;
+    margin-bottom: 1.2em;
+}
+
+.quest-photos img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    display: block;
+}
+
+.quest-photo-ph {
+    aspect-ratio: 4 / 3;
+    background-color: rgba(46, 46, 46, 0.08);
+    border: 1px dashed rgba(46, 46, 46, 0.3);
+    display: grid;
+    place-content: center;
+    font-size: 0.55em;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(46, 46, 46, 0.4);
+}
+
+.quest-panel p {
+    font-size: 0.7em;
+    line-height: 1.8;
+    margin: 0;
+    color: rgba(0, 0, 0, 0.6);
+}
+
+.quest-panel-close {
+    position: absolute;
+    top: 0.4em;
+    right: 0.5em;
+    font-size: 1.4em;
+    color: var(--primary-grey);
+    line-height: 1;
+}
+
+.quest-panel-close:hover {
+    color: var(--primary-clr);
+}
+
+@media (max-width: 800px) {
+    .quest-tooltip {
+        display: none;
+    }
+}
+</style>
 </head>
 <body>
     <main>
@@ -738,7 +901,273 @@ nav > .nav-store > a.selected {
     </div>
 </div>
 <div class=" page" data-nav="top-bar" id="side-quests">
-    <h2>Side Quests</h2>
+    <div class="map-viewport" id="map-viewport">
+        <div class="map-strip" id="map-strip"></div>
+    </div>
+    <div class="quest-tooltip hidden" id="quest-tooltip"></div>
+
+    <div class="quest-panel" id="quest-panel">
+        <div class="quest-panel-accent" id="quest-panel-accent"></div>
+        <button class="quest-panel-close" id="quest-panel-close" aria-label="Close">&times;</button>
+        <h3 id="quest-panel-title"></h3>
+        <div class="quest-photos" id="quest-photos"></div>
+        <p id="quest-panel-text"></p>
+    </div>
+
+    <script>
+    (function () {
+        // ── Quest countries ─────────────────────────────────────────────
+        // Countries listed here get coloured in and become clickable.
+        // 'flag' is an ISO code — the country is filled with its national
+        // flag from /assets/flags/<code>.png (download to that folder).
+        // 'colour' backs the flag (shows through any transparency) and
+        // tints the panel accent bar.
+        // 'images' is a list of photo urls shown in the panel (placeholder
+        // tiles appear for any missing).
+        var QUESTS = {
+            'Nepal': {
+                flag: 'np',
+                colour: '#E07A5F',
+                title: 'Nepal',
+                text: 'Placeholder story — trekking tea houses, prayer flags and a borrowed guitar somewhere on the Annapurna circuit. Replace this text with the real quest.',
+                images: []
+            },
+        };
+        var PALETTE = ['#E07A5F', '#81B29A', '#F2CC8F', '#7A9CC6', '#D48CB3', '#9A8C98'];
+
+        var page = document.getElementById('side-quests');
+        var viewport = document.getElementById('map-viewport');
+        var strip = document.getElementById('map-strip');
+        var tooltip = document.getElementById('quest-tooltip');
+        var panel = document.getElementById('quest-panel');
+        var accentEl = document.getElementById('quest-panel-accent');
+        var titleEl = document.getElementById('quest-panel-title');
+        var photosEl = document.getElementById('quest-photos');
+        var textEl = document.getElementById('quest-panel-text');
+        var ASPECT = 1000 / 535;   // world-map.svg viewBox ratio
+
+        // ── Side panel (slides in from the left) ────────────────────────
+        function openPanel(name) {
+            var q = QUESTS[name];
+            if (!q) return;
+            titleEl.textContent = q.title || name;
+            textEl.textContent = q.text || '';
+            accentEl.style.backgroundColor = q.colour || '';
+            photosEl.innerHTML = '';
+            var imgs = q.images || [];
+            var slots = Math.max(imgs.length, 2);   // always leave photo room
+            for (var i = 0; i < slots; i++) {
+                if (imgs[i]) {
+                    var img = document.createElement('img');
+                    img.src = imgs[i];
+                    img.alt = (q.title || name) + ' photo';
+                    photosEl.appendChild(img);
+                } else {
+                    var ph = document.createElement('div');
+                    ph.className = 'quest-photo-ph';
+                    ph.textContent = 'Photo';
+                    photosEl.appendChild(ph);
+                }
+            }
+            panel.classList.add('open');
+        }
+        function closePanel() {
+            panel.classList.remove('open');
+        }
+        document.getElementById('quest-panel-close').addEventListener('click', closePanel);
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') closePanel();
+        });
+
+        // ── Fill the viewport below the nav exactly ─────────────────────
+        function sizePage() {
+            var nav = document.querySelector('main > nav');
+            var navH = (nav && nav.offsetHeight) || 0;
+            page.style.setProperty('--sq-h', (window.innerHeight - navH) + 'px');
+        }
+
+        // ── Endless horizontal pan (wraps) + clamped vertical pan ───────
+        var mapW = 0;              // pixel width of one 360° copy
+        var mapH = 0;              // pixel height of the strip
+        var offset = 0;            // horizontal pan, wrapped to [0, mapW)
+        var offsetY = 0;           // vertical pan, clamped to the map
+        var vel = 0;               // inertia velocity
+        var dragging = false;
+        var moved = 0;             // distance since pointerdown (click guard)
+        var lastX = 0, lastY = 0;
+        var placedY = false;
+
+        function clampY() {
+            var vh = viewport.clientHeight;
+            if (mapH <= vh) {
+                offsetY = -(vh - mapH) / 2;   // shorter than viewport: centre it
+            } else {
+                offsetY = Math.max(0, Math.min(mapH - vh, offsetY));
+            }
+        }
+
+        function layout() {
+            sizePage();
+            var vh = viewport.clientHeight;
+            var vw = viewport.clientWidth;
+            if (!vh || !vw) return;
+            var w = vw;                       // world spans the full width
+            var h = w / ASPECT;
+            if (h < vh) {                     // very tall window: cover by height
+                h = vh;
+                w = h * ASPECT;
+            }
+            mapW = w;
+            mapH = h;
+            strip.style.height = h + 'px';
+            strip.style.top = '0px';
+            strip.querySelectorAll('svg').forEach(function (s) {
+                s.style.width = w + 'px';
+                s.style.height = h + 'px';
+            });
+            if (!placedY && mapH > 0) {
+                placedY = true;
+                offsetY = (mapH - vh) / 2;    // start looking at the middle
+            }
+            clampY();
+        }
+
+        var AUTO_DRIFT = 0.25;     // px per frame — slow constant travel
+
+        function tick() {
+            if (!dragging) {
+                if (Math.abs(vel) > 0.05) {
+                    offset += vel;
+                    vel *= 0.94;   // glide to a stop after release
+                }
+                offset -= AUTO_DRIFT;   // ambient drift (map slides right)
+            }
+            if (mapW > 0) {
+                offset = ((offset % mapW) + mapW) % mapW;
+                // three tiled copies — the window always views the middle one,
+                // so cross-dateline overflow is provided on both sides
+                strip.style.transform = 'translate3d(' + (-(offset + mapW)) + 'px,' + (-offsetY) + 'px,0)';
+            }
+            requestAnimationFrame(tick);
+        }
+
+        // Drag is tracked on window (no pointer capture — capture would
+        // retarget clicks away from the country paths and break them).
+        viewport.addEventListener('pointerdown', function (e) {
+            dragging = true;
+            moved = 0;
+            vel = 0;
+            lastX = e.clientX;
+            lastY = e.clientY;
+            viewport.classList.add('grabbing');
+        });
+        window.addEventListener('pointermove', function (e) {
+            if (!dragging) return;
+            var dx = e.clientX - lastX;
+            var dy = e.clientY - lastY;
+            lastX = e.clientX;
+            lastY = e.clientY;
+            offset -= dx;
+            offsetY -= dy;
+            clampY();
+            vel = -dx;
+            moved += Math.abs(dx) + Math.abs(dy);
+        });
+        function endDrag() {
+            dragging = false;
+            viewport.classList.remove('grabbing');
+        }
+        window.addEventListener('pointerup', endDrag);
+        window.addEventListener('pointercancel', endDrag);
+        viewport.addEventListener('wheel', function (e) {
+            offset += e.deltaX;
+            offsetY += e.deltaY;
+            clampY();
+        }, { passive: true });
+
+        // ── Tooltip + quest clicks (delegated — covers both copies) ─────
+        var canHover = window.matchMedia('(hover: hover)').matches;
+        strip.addEventListener('mousemove', function (e) {
+            if (!canHover) return;
+            var t = e.target;
+            if (t.classList && t.classList.contains('country')) {
+                tooltip.textContent = t.getAttribute('data-name');
+                tooltip.classList.remove('hidden');
+                tooltip.style.left = (e.clientX + 14) + 'px';
+                tooltip.style.top = (e.clientY + 18) + 'px';
+            } else {
+                tooltip.classList.add('hidden');
+            }
+        });
+        strip.addEventListener('mouseleave', function () {
+            tooltip.classList.add('hidden');
+        });
+        strip.addEventListener('click', function (e) {
+            if (moved > 6) return;     // it was a drag, not a click
+            var t = e.target;
+            if (t.classList && t.classList.contains('quest')) {
+                openPanel(t.getAttribute('data-name'));
+            }
+        });
+
+        // ── Load the map once, the first time the page is shown ─────────
+        var loaded = false;
+        function ensureMap() {
+            if (loaded || page.classList.contains('hidden')) return;
+            loaded = true;
+            fetch('/assets/world-map.svg')
+                .then(function (r) { return r.text(); })
+                .then(function (svg) {
+                    strip.innerHTML = svg + svg + svg;   // three copies = seamless loop
+                    var SVGNS = 'http://www.w3.org/2000/svg';
+                    var firstSvg = strip.querySelector('svg');
+                    var defs = document.createElementNS(SVGNS, 'defs');
+                    firstSvg.insertBefore(defs, firstSvg.firstChild);
+                    var names = Object.keys(QUESTS);
+                    names.forEach(function (name, i) {
+                        var q = QUESTS[name];
+                        var els = strip.querySelectorAll('.country[data-name="' + name + '"]');
+                        if (!els.length) { console.warn('Quest country not on map:', name); return; }
+                        var colour = q.colour || PALETTE[i % PALETTE.length];
+                        var fill = colour;
+                        if (q.flag) {
+                            // Flag pattern pinned to the country's bounding box,
+                            // scaled to cover it (slice) — the path clips it to
+                            // the country silhouette.
+                            var bb = els[0].getBBox();
+                            var pid = 'flag-' + q.flag + '-' + i;
+                            var pat = document.createElementNS(SVGNS, 'pattern');
+                            pat.setAttribute('id', pid);
+                            pat.setAttribute('patternUnits', 'userSpaceOnUse');
+                            pat.setAttribute('x', bb.x);
+                            pat.setAttribute('y', bb.y);
+                            pat.setAttribute('width', bb.width);
+                            pat.setAttribute('height', bb.height);
+                            var img = document.createElementNS(SVGNS, 'image');
+                            img.setAttribute('href', '/assets/flags/' + q.flag + '.png');
+                            img.setAttribute('width', bb.width);
+                            img.setAttribute('height', bb.height);
+                            img.setAttribute('preserveAspectRatio', 'xMidYMid slice');
+                            pat.appendChild(img);
+                            defs.appendChild(pat);
+                            fill = 'url(#' + pid + ')';
+                        }
+                        els.forEach(function (p) {
+                            p.classList.add('quest');
+                            p.style.fill = fill;
+                        });
+                    });
+                    layout();
+                });
+        }
+        new MutationObserver(function () { ensureMap(); layout(); })
+            .observe(page, { attributes: true, attributeFilter: ['class'] });
+        window.addEventListener('resize', layout);
+        sizePage();
+        ensureMap();
+        tick();
+    })();
+    </script>
 </div>
 <div class=" hidden  page" data-nav="top-bar" id="store">
     <h2>Merchandise</h2>
@@ -879,7 +1308,7 @@ nav > .nav-store > a.selected {
 
     <div class="signup-banner" id="signup-banner" onclick="site.navigateTo('sign-up')">
         <canvas id="murmuration" class="murmuration"></canvas>
-        <span class="signup-banner-text">Become a Starling</span>
+        <span class="signup-banner-text" id="signup-banner-text">Become a Starling</span>
     </div>
 
     <script>
@@ -979,16 +1408,27 @@ nav > .nav-store > a.selected {
         window.addEventListener('resize', resize);
         tick();
 
-        // ── Show banner only while the Music page is the visible one ───────
+        // ── Show banner on selected pages, with page-specific text ─────────
         // Nav clicks call main.js's internal navigateTo (not site.navigateTo),
         // so we watch the page divs directly — robust to any navigation path.
         var banner = document.getElementById('signup-banner');
+        var bannerText = document.getElementById('signup-banner-text');
+        var BANNER_PAGES = {
+            'music': 'Become a Starling',
+            'side-quests': 'Join an Adventure'
+        };
         function visiblePageId() {
             var el = document.querySelector('.page:not(.hidden)');
             return el ? el.id : '';
         }
         function updateBanner() {
-            banner.style.transform = (visiblePageId() === 'music') ? 'translateY(0)' : 'translateY(100%)';
+            var text = BANNER_PAGES[visiblePageId()];
+            if (text) {
+                bannerText.textContent = text;
+                banner.style.transform = 'translateY(0)';
+            } else {
+                banner.style.transform = 'translateY(100%)';
+            }
         }
         var mo = new MutationObserver(updateBanner);
         document.querySelectorAll('.page').forEach(function (p) {

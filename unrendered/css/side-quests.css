@@ -1,0 +1,163 @@
+#side-quests {
+    /* fills the viewport below the nav — height set by script (--sq-h) */
+    position: relative;
+    height: var(--sq-h, calc(100dvh - 4em));
+    box-sizing: border-box;
+    background-color: var(--primary-grey);
+    color: white;
+    overflow: hidden;
+}
+
+.map-viewport {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    cursor: grab;
+    touch-action: none;
+}
+
+.map-viewport.grabbing {
+    cursor: grabbing;
+}
+
+.map-strip {
+    position: absolute;
+    left: 0;
+    display: flex;
+    width: max-content;
+    will-change: transform;
+}
+
+.map-strip svg {
+    display: block;
+    flex: 0 0 auto;
+    overflow: visible;   /* dateline-crossing land bleeds onto the next copy */
+}
+
+.map-strip .country {
+    fill: #454545;
+    stroke: #ffffff;
+    stroke-width: 0.35;
+    transition: 0.25s fill;
+}
+
+.map-strip .country:hover {
+    fill: #545454;
+}
+
+.map-strip .grat {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.07);
+    stroke-width: 0.5;
+}
+
+.map-strip .country.quest {
+    cursor: pointer;
+}
+
+.map-strip .country.quest:hover {
+    filter: brightness(1.25);
+}
+
+.quest-tooltip {
+    position: fixed;
+    pointer-events: none;
+    background-color: var(--primary-white);
+    color: var(--primary-grey);
+    font-size: 0.55em;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0.45em 0.9em;
+    white-space: nowrap;
+    z-index: 9;
+}
+
+.quest-panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: min(420px, 85vw);
+    box-sizing: border-box;
+    background-color: var(--primary-white);
+    color: var(--primary-grey);
+    padding: 2.2em 2em 2em;
+    overflow-y: auto;
+    transform: translateX(-105%);
+    transition: 0.35s transform;
+    z-index: 10;
+    box-shadow: 8px 0 30px rgba(0, 0, 0, 0.35);
+}
+
+.quest-panel.open {
+    transform: translateX(0);
+}
+
+.quest-panel-accent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background-color: var(--primary-clr);
+}
+
+.quest-panel h3 {
+    font: inherit;
+    font-size: 1.2em;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin: 0 0 1em;
+}
+
+.quest-photos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8em;
+    margin-bottom: 1.2em;
+}
+
+.quest-photos img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    display: block;
+}
+
+.quest-photo-ph {
+    aspect-ratio: 4 / 3;
+    background-color: rgba(46, 46, 46, 0.08);
+    border: 1px dashed rgba(46, 46, 46, 0.3);
+    display: grid;
+    place-content: center;
+    font-size: 0.55em;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(46, 46, 46, 0.4);
+}
+
+.quest-panel p {
+    font-size: 0.7em;
+    line-height: 1.8;
+    margin: 0;
+    color: rgba(0, 0, 0, 0.6);
+}
+
+.quest-panel-close {
+    position: absolute;
+    top: 0.4em;
+    right: 0.5em;
+    font-size: 1.4em;
+    color: var(--primary-grey);
+    line-height: 1;
+}
+
+.quest-panel-close:hover {
+    color: var(--primary-clr);
+}
+
+@media (max-width: 800px) {
+    .quest-tooltip {
+        display: none;
+    }
+}
