@@ -2,21 +2,103 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    padding: 3em;
+    box-sizing: border-box;
+    background-color: var(--primary-white);
+    color: var(--primary-grey);
 }
 
+.album-section {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 5em;
+    align-items: flex-start;
+    justify-content: center;
+}
 
-#music > a {
-    display: block;
-    text-align: center;
-    padding: 1em;
-    font-size: 3em;
-    text-decoration: none;
-    color: inherit;
-    background-position: center center;
-    text-transform: uppercase;
+.album-section + .album-section {
+    margin-top: 6em;
+}
+
+.album-art {
     flex-shrink: 0;
-    flex-grow: 1;
-    position: relative;
+    width: 560px;
+    height: 560px;
+    background-color: var(--primary-grey);
+    border: 1px solid #555;
     display: grid;
     place-content: center;
+    font-size: 10em;
+    color: rgba(255,255,255,0.3);
+    overflow: hidden;
+}
+
+.album-art img {
+    width: 560px;
+    height: 560px;
+    object-fit: cover;
+    display: block;
+}
+
+.tracklist {
+    flex-shrink: 0;
+}
+
+.tracklist h2 {
+    margin: 0 0 0.75em;
+    font: inherit;
+    font-size: 1.2em;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+}
+
+.tracks {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.8em;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+}
+
+.tracks li {
+    display: flex;
+    align-items: baseline;
+    padding: 0.35em 0;
+}
+
+.t-num {
+    flex: 0 0 1.8em;       /* fixed column so every title starts at the same x */
+    text-align: right;
+    margin-right: 0.9em;
+    color: rgba(0,0,0,0.4);
+}
+
+.album-blurb {
+    flex: 1 1 360px;
+    max-width: 560px;
+}
+
+/* Phantom spacer matching the tracklist title's exact metrics, so the latin
+   text's first line lands level with the first song name — independent of
+   font/line-height rounding, and identical for both albums. */
+.album-blurb::before {
+    content: "\00a0";
+    display: block;
+    font-size: 1.2em;       /* same as .tracklist h2 */
+    line-height: 1.6;
+    margin-bottom: 0.75em;
+}
+
+.album-blurb p {
+    font-size: 0.65em;
+    line-height: 1.8;
+    color: rgba(0,0,0,0.5);
+    margin: 0 0 1em;
+}
+
+#music > button {
+    margin-top: 3em;
+    align-self: flex-start;
 }

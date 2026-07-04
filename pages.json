@@ -5,8 +5,23 @@
         "show-nav": "full"
     },
     {
+        "id": "about-me",
+        "name": "About",
+        "show-nav": "top-bar"
+    },
+    {
+        "id": "work",
+        "name": "Work",
+        "show-nav": "top-bar"
+    },
+    {
         "id": "music",
         "name": "Music",
+        "show-nav": "top-bar"
+    },
+    {
+        "id": "side-quests",
+        "name": "Side Quests",
         "show-nav": "top-bar"
     },
     {

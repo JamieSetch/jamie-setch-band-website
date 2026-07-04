@@ -4,6 +4,11 @@ import build
 app = Flask(__name__, static_url_path = '/unrendered')
 
 ## i hate this but its only for testing :/
+@app.route('/')
+def root():
+    build.build()
+    return send_file('rendered/index.html')
+
 @app.route('/<path>')
 def path(path):
     build.build()

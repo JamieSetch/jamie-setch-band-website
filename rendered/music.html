@@ -304,28 +304,187 @@ body.side-nav-open .side-nav-close {
 
 .side-nav-socials > a {
     margin-right: 0.3em;
+}
+
+.nav-store {
+    display: none;
+}
+
+nav[data-size="full"] > .nav-store {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 0.5em;
+}
+
+nav[data-size="top-bar"] > .nav-store {
+    display: flex;
+    align-self: center;
+    padding: 0;
+}
+
+nav[data-size="top-bar"] > .main-nav {
+    padding-right: 0;
+}
+
+nav > .nav-store > a {
+    color: inherit;
+    text-decoration: none;
+    position: relative;
+    padding: 0.5rem;
+    font-size: 0.8em;
+    transition: 0.5s color;
+}
+
+nav > .nav-store > a:hover,
+nav > .nav-store > a.selected {
+    color: var(--primary-clr);
+}
+
+.signup-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 72px;
+    background-color: var(--primary-grey);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    overflow: hidden;
+    transform: translateY(100%);
+    transition: 0.4s transform;
+    z-index: 5;
+}
+
+.murmuration {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+.signup-banner-text {
+    position: relative;
+    z-index: 1;
+    text-transform: uppercase;
+    font-size: 0.9em;
+    text-shadow: 0 0 8px rgba(46, 46, 46, 0.9);
+}
+
+@media (max-width: 800px) {
+    .murmuration {
+        display: none;
+    }
 }#music {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    padding: 3em;
+    box-sizing: border-box;
+    background-color: var(--primary-white);
+    color: var(--primary-grey);
 }
 
+.album-section {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 5em;
+    align-items: flex-start;
+    justify-content: center;
+}
 
-#music > a {
-    display: block;
-    text-align: center;
-    padding: 1em;
-    font-size: 3em;
-    text-decoration: none;
-    color: inherit;
-    background-position: center center;
-    text-transform: uppercase;
+.album-section + .album-section {
+    margin-top: 6em;
+}
+
+.album-art {
     flex-shrink: 0;
-    flex-grow: 1;
-    position: relative;
+    width: 560px;
+    height: 560px;
+    background-color: var(--primary-grey);
+    border: 1px solid #555;
     display: grid;
     place-content: center;
+    font-size: 10em;
+    color: rgba(255,255,255,0.3);
+    overflow: hidden;
 }
+
+.album-art img {
+    width: 560px;
+    height: 560px;
+    object-fit: cover;
+    display: block;
+}
+
+.tracklist {
+    flex-shrink: 0;
+}
+
+.tracklist h2 {
+    margin: 0 0 0.75em;
+    font: inherit;
+    font-size: 1.2em;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+}
+
+.tracks {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.8em;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+}
+
+.tracks li {
+    display: flex;
+    align-items: baseline;
+    padding: 0.35em 0;
+}
+
+.t-num {
+    flex: 0 0 1.8em;       /* fixed column so every title starts at the same x */
+    text-align: right;
+    margin-right: 0.9em;
+    color: rgba(0,0,0,0.4);
+}
+
+.album-blurb {
+    flex: 1 1 360px;
+    max-width: 560px;
+}
+
+/* Phantom spacer matching the tracklist title's exact metrics, so the latin
+   text's first line lands level with the first song name — independent of
+   font/line-height rounding, and identical for both albums. */
+.album-blurb::before {
+    content: "\00a0";
+    display: block;
+    font-size: 1.2em;       /* same as .tracklist h2 */
+    line-height: 1.6;
+    margin-bottom: 0.75em;
+}
+
+.album-blurb p {
+    font-size: 0.65em;
+    line-height: 1.8;
+    color: rgba(0,0,0,0.5);
+    margin: 0 0 1em;
+}
+
+#music > button {
+    margin-top: 3em;
+    align-self: flex-start;
+}
+
 #store {
     color: var(--primary-grey);
     background-color: var(--primary-white);
@@ -508,10 +667,14 @@ body.side-nav-open .side-nav-close {
                 <h1>Jamie Setch</h1>
                 <div class="links">
                     <a href="/home" data-navid="home" class="nav-link">Home</a>
+                    <a href="/about-me" data-navid="about-me" class="nav-link">About</a>
+                    <a href="/work" data-navid="work" class="nav-link">Work</a>
                     <a href="/music" data-navid="music" class="nav-link">Music</a>
-                    <a href="/store" data-navid="store" class="nav-link">Store</a>
-                    <a href="/sign-up" data-navid="sign-up" class="nav-link">Sign Up</a>
+                    <a href="/side-quests" data-navid="side-quests" class="nav-link">Side Quests</a>
                 </div>
+            </div>
+            <div class="nav-store">
+                <a href="/store" data-navid="store" class="nav-link">Store</a>
             </div>
             <div class="now-playing hidden">
                 <button onclick="site.toggleMusic()">
@@ -522,58 +685,81 @@ body.side-nav-open .side-nav-close {
             </div>
         </nav>
         <div class=" hidden  page" data-nav="full" id="home">
-</div><div class=" page" data-nav="top-bar" id="music">
-    
-            <a data-name="Betrayal" style='background:url("assets/songs/betrayal.webp"); color: white' href='https://google.com' data-date='1737504000.0' class='countdown'>
-                <span>Betrayal</span>
-            </a>
-        
-            <a data-name="Coming Soon..." style='background:#2E2E2E; color: white' href='' data-date='' class=''>
-                <span>Coming Soon...</span>
-            </a>
-        
-            <a data-name="Coming Later..." style='background:white; color: black' href='' data-date='' class=''>
-                <span>Coming Later...</span>
-            </a>
-        
-</div><div class=" hidden  page" data-nav="top-bar" id="store">
+</div><div class=" hidden  page" data-nav="top-bar" id="about-me">
+    <h2>About Me</h2>
+</div>
+<div class=" hidden  page" data-nav="top-bar" id="work">
+    <h2>Work</h2>
+</div>
+<div class=" page" data-nav="top-bar" id="music">
+    <div class="album-section flipped">
+        <div class="album-blurb">
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        </div>
+        <div class="tracklist">
+            <h2>Breaking Waves</h2>
+            <ul class="tracks">
+                <li><span class="t-num">#</span><span class="t-name">Ripples</span><span class="t-num">#</span></li>
+                <li><span class="t-num">1</span><span class="t-name">Bluebird</span></li>
+                <li><span class="t-num">2</span><span class="t-name">Shadow People</span></li>
+                <li><span class="t-num">3</span><span class="t-name">Kids</span></li>
+                <li><span class="t-num">4</span><span class="t-name">Remind Me</span></li>
+                <li><span class="t-num">5</span><span class="t-name">Paranoid</span></li>
+                <li><span class="t-num">#</span><span class="t-name">Ripples</span><span class="t-num">#</span></li>
+            </ul>
+        </div>
+        <div class="album-art">?</div>
+    </div>
+
+    <div class="album-section">
+        <div class="album-art"><img src="assets/albums/wave-cover.webp" alt="Album cover"></div>
+        <div class="tracklist">
+            <h2>Lorem Ipsum</h2>
+            <ul class="tracks">
+                <li><span class="t-num">#</span><span class="t-name">Ripples</span><span class="t-num">#</span></li>
+                <li><span class="t-num">1</span><span class="t-name">Bluebird</span></li>
+                <li><span class="t-num">2</span><span class="t-name">Shadow People</span></li>
+                <li><span class="t-num">3</span><span class="t-name">Kids</span></li>
+                <li><span class="t-num">4</span><span class="t-name">Remind Me</span></li>
+                <li><span class="t-num">5</span><span class="t-name">Paranoid</span></li>
+                <li><span class="t-num">6</span><span class="t-name">Sunsurfing</span></li>
+                <li><span class="t-num">7</span><span class="t-name">Betrayal</span></li>
+                <li><span class="t-num">8</span><span class="t-name">Cuckoo</span></li>
+                <li><span class="t-num">9</span><span class="t-name">Rose</span></li>
+                <li><span class="t-num">10</span><span class="t-name">Breaking Waves</span></li>
+                <li><span class="t-num">#</span><span class="t-name">Ripples</span><span class="t-num">#</span></li>
+            </ul>
+        </div>
+        <div class="album-blurb">
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        </div>
+    </div>
+</div>
+<div class=" hidden  page" data-nav="top-bar" id="side-quests">
+    <h2>Side Quests</h2>
+</div>
+<div class=" hidden  page" data-nav="top-bar" id="store">
     <h2>Merchandise</h2>
     <div class="store-items">
         
             <a class="store-item" href="https://shopify.com">
-                <img src="assets/store/White-T.png" alt="White T">
-                <div class="item-name">White T</div>
-                <div class="item-price">£25.00</div>
+                <img src="assets/store/White-T.png" alt="T-Shirt">
+                <div class="item-name">T-Shirt</div>
+                <div class="item-price">£24.99</div>
             </a>
         
             <a class="store-item" href="https://shopify.com">
-                <img src="assets/store/placeholder.png" alt="T-Shirt Black">
-                <div class="item-name">T-Shirt Black</div>
-                <div class="item-price">£15.00</div>
-            </a>
-        
-            <a class="store-item" href="https://shopify.com">
-                <img src="assets/store/placeholder.png" alt="Tote bag">
+                <img src="assets/store/Tote.png" alt="Tote bag">
                 <div class="item-name">Tote bag</div>
-                <div class="item-price">£15.00</div>
+                <div class="item-price">£14.99</div>
             </a>
         
             <a class="store-item" href="https://shopify.com">
-                <img src="assets/store/placeholder.png" alt="White Mug">
+                <img src="assets/store/Mug.png" alt="White Mug">
                 <div class="item-name">White Mug</div>
-                <div class="item-price">£15.00</div>
-            </a>
-        
-            <a class="store-item" href="https://shopify.com">
-                <img src="assets/store/placeholder.png" alt="Tote bag">
-                <div class="item-name">Tote bag</div>
-                <div class="item-price">£15.00</div>
-            </a>
-        
-            <a class="store-item" href="https://shopify.com">
-                <img src="assets/store/placeholder.png" alt="Tote bag">
-                <div class="item-name">Tote bag</div>
-                <div class="item-price">£15.00</div>
+                <div class="item-price">£12.49</div>
             </a>
         
     </div>
@@ -594,9 +780,11 @@ body.side-nav-open .side-nav-close {
     <div class="side-nav-close" onclick="site.toggleSideNav()"></div>
     <div class="side-nav">
         <a href="/home" data-navid="home" class="nav-link">Home</a>
+        <a href="/about-me" data-navid="about-me" class="nav-link">About</a>
+        <a href="/work" data-navid="work" class="nav-link">Work</a>
         <a href="/music" data-navid="music" class="nav-link">Music</a>
+        <a href="/side-quests" data-navid="side-quests" class="nav-link">Side Quests</a>
         <a href="/store" data-navid="store" class="nav-link">Store</a>
-        <a href="/sign-up" data-navid="sign-up" class="nav-link">Sign Up</a>
         <div class="side-nav-socials">
             
             <a href="https://www.apple.com">
@@ -676,7 +864,7 @@ body.side-nav-open .side-nav-close {
         
         </div>
     </div>
-    
+
     <script type="module" src="javascript/main.js"></script>
 
     <!-- MailerLite Universal -->
@@ -688,5 +876,127 @@ body.side-nav-open .side-nav-close {
         ml('account', '1190565');
     </script>
     <!-- End MailerLite Universal -->
+
+    <div class="signup-banner" id="signup-banner" onclick="site.navigateTo('sign-up')">
+        <canvas id="murmuration" class="murmuration"></canvas>
+        <span class="signup-banner-text">Become a Starling</span>
+    </div>
+
+    <script>
+    (function () {
+        // ── Two flocks streaming out from the centre of the banner ──
+        const canvas  = document.getElementById('murmuration');
+        const ctx     = canvas.getContext('2d');
+        const dpr     = window.devicePixelRatio || 1;
+
+        // The favicon is a flying-starling silhouette — reuse it as the bird sprite.
+        const birdImg = new Image();
+        let birdReady = false;
+        birdImg.onload = function () { birdReady = true; };
+        birdImg.src = '/favicon.ico';
+        const BIRD_AR = 280 / 260;   // native height / width
+
+        let W = 0, H = 0, emitLX = 0, emitRX = 0, emitY = 0, MAXD = 600;
+
+        function resize() {
+            W = canvas.clientWidth;
+            H = canvas.clientHeight;
+            canvas.width  = W * dpr;
+            canvas.height = H * dpr;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            // Both flocks start a little either side of centre, then stream outward.
+            emitLX = W / 2 - W * 0.06;
+            emitRX = W / 2 + W * 0.06;
+            emitY  = H / 2;
+            MAXD   = W * 0.95;   // travel distance — enough to clear the outer edge
+        }
+
+        const N = 240;
+        const birds = [];
+        function spawn(b) {
+            // Starts near the centre (p≈0) and flies outward toward its edge (p→1).
+            b.p  = 0;
+            b.speed = 0.0012 + Math.random() * 0.0013;   // very slow, drifting
+            b.jx = (Math.random() - 0.5) * 26;            // little cloud around the origin
+            b.jy = (Math.random() - 0.5) * 14;
+            b.oy = (Math.random() - 0.5);                 // vertical fan as it travels
+            b.phase = Math.random() * Math.PI * 2;
+            b.flapSpeed = 0.26 + Math.random() * 0.18;
+            b.seed = Math.random() * 1000;
+            return b;
+        }
+        for (var i = 0; i < N; i++) {
+            var b = spawn({});
+            b.side = (i % 2 === 0) ? -1 : 1;              // half left, half right
+            b.p = Math.random();                          // stagger so the stream is continuous
+            birds.push(b);
+        }
+
+        let t = 0;
+        function tick() {
+            t++;
+            ctx.clearRect(0, 0, W, H);
+
+            // Draw the youngest (smallest) first so nearer birds overlap on top.
+            birds.sort(function (a, c) { return a.p - c.p; });
+
+            for (var i = 0; i < N; i++) {
+                var b = birds[i];
+                b.p += b.speed;
+                if (b.p >= 1) { spawn(b); continue; }
+
+                var ease = b.p * b.p;                       // accelerate outward + toward viewer
+                var dist = ease * MAXD;
+                var origin = (b.side < 0) ? emitLX : emitRX;
+                var sx = origin + b.side * dist + b.jx;
+                var sy = emitY + b.oy * dist * 0.14 + b.jy
+                       + Math.sin(t * 0.03 + b.seed) * 2;   // soft murmuration sway
+                var s  = 1.5 + ease * 12;                   // grows as it nears the viewer (a bit bigger)
+
+                var alpha = Math.min(1, b.p / 0.10) * Math.min(1, (1 - b.p) / 0.18);
+                ctx.globalAlpha = Math.max(0, alpha);
+
+                if (!birdReady) {            // sprite not loaded yet — faint placeholder dot
+                    ctx.fillStyle = 'rgba(170,160,70,0.9)';
+                    ctx.fillRect(sx - 1, sy - 1, 2, 2);
+                    continue;
+                }
+
+                // Flap by squashing the spread-wing starling vertically (down/up stroke).
+                var flap = 0.5 + 0.5 * Math.sin(t * b.flapSpeed + b.phase); // 0..1
+                var w = s * 2.6;
+                var h = w * BIRD_AR * (0.45 + 0.55 * flap);
+                ctx.save();
+                ctx.translate(sx, sy);
+                if (b.side < 0) ctx.scale(-1, 1);   // mirror so it faces its flight direction
+                ctx.drawImage(birdImg, -w / 2, -h / 2, w, h);
+                ctx.restore();
+            }
+            ctx.globalAlpha = 1;
+            requestAnimationFrame(tick);
+        }
+        resize();
+        window.addEventListener('resize', resize);
+        tick();
+
+        // ── Show banner only while the Music page is the visible one ───────
+        // Nav clicks call main.js's internal navigateTo (not site.navigateTo),
+        // so we watch the page divs directly — robust to any navigation path.
+        var banner = document.getElementById('signup-banner');
+        function visiblePageId() {
+            var el = document.querySelector('.page:not(.hidden)');
+            return el ? el.id : '';
+        }
+        function updateBanner() {
+            banner.style.transform = (visiblePageId() === 'music') ? 'translateY(0)' : 'translateY(100%)';
+        }
+        var mo = new MutationObserver(updateBanner);
+        document.querySelectorAll('.page').forEach(function (p) {
+            mo.observe(p, { attributes: true, attributeFilter: ['class'] });
+        });
+        updateBanner();
+        window.addEventListener('popstate', updateBanner);
+    })();
+    </script>
 </body>
 </html>

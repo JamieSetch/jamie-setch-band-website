@@ -298,3 +298,79 @@ body.side-nav-open .side-nav-close {
 .side-nav-socials > a {
     margin-right: 0.3em;
 }
+
+.nav-store {
+    display: none;
+}
+
+nav[data-size="full"] > .nav-store {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 0.5em;
+}
+
+nav[data-size="top-bar"] > .nav-store {
+    display: flex;
+    align-self: center;
+    padding: 0;
+}
+
+nav[data-size="top-bar"] > .main-nav {
+    padding-right: 0;
+}
+
+nav > .nav-store > a {
+    color: inherit;
+    text-decoration: none;
+    position: relative;
+    padding: 0.5rem;
+    font-size: 0.8em;
+    transition: 0.5s color;
+}
+
+nav > .nav-store > a:hover,
+nav > .nav-store > a.selected {
+    color: var(--primary-clr);
+}
+
+.signup-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 72px;
+    background-color: var(--primary-grey);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    overflow: hidden;
+    transform: translateY(100%);
+    transition: 0.4s transform;
+    z-index: 5;
+}
+
+.murmuration {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+.signup-banner-text {
+    position: relative;
+    z-index: 1;
+    text-transform: uppercase;
+    font-size: 0.9em;
+    text-shadow: 0 0 8px rgba(46, 46, 46, 0.9);
+}
+
+@media (max-width: 800px) {
+    .murmuration {
+        display: none;
+    }
+}
