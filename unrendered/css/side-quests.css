@@ -12,12 +12,8 @@
     position: absolute;
     inset: 0;
     overflow: hidden;
-    cursor: grab;
     touch-action: none;
-}
-
-.map-viewport.grabbing {
-    cursor: grabbing;
+    /* cursor (sailboat / paper plane) is set by the page script */
 }
 
 .map-strip {
@@ -49,10 +45,6 @@
     fill: none;
     stroke: rgba(255, 255, 255, 0.07);
     stroke-width: 0.5;
-}
-
-.map-strip .country.quest {
-    cursor: pointer;
 }
 
 .map-strip .country.quest:hover {

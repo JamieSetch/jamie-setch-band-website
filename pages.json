@@ -16,12 +16,12 @@
     },
     {
         "id": "music",
-        "name": "Music",
+        "name": "Starlings",
         "show-nav": "top-bar"
     },
     {
         "id": "side-quests",
-        "name": "Side Quests",
+        "name": "Travel",
         "show-nav": "top-bar"
     },
     {

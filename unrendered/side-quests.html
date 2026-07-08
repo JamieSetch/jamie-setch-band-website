@@ -42,7 +42,21 @@
         var titleEl = document.getElementById('quest-panel-title');
         var photosEl = document.getElementById('quest-photos');
         var textEl = document.getElementById('quest-panel-text');
-        var ASPECT = 1000 / 535;   // world-map.svg viewBox ratio
+
+        // ── Cursors: normal pointer over land, sailboat over water ──────
+        // The boat matches the banner's thin white line-work.
+        function cursor(svg, hx, hy, fallback) {
+            return 'url("data:image/svg+xml,' + encodeURIComponent(
+                '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">' + svg + '</svg>'
+            ) + '") ' + hx + ' ' + hy + ', ' + fallback;
+        }
+        var boatCur = cursor('<path d="M6 21 L26 21 L22.5 26 L9.5 26 Z"/><path d="M16.5 21 L16.5 7"/><path d="M16.5 7 L25 19.5 L16.5 19.5 Z"/><path d="M15 9.5 L8 19.5 L15 19.5 Z"/><path d="M3 29 Q7 27.5 11 29 T19 29 T27 29"/>', 16, 16, 'grab');
+        var curStyle = document.createElement('style');
+        curStyle.textContent =
+            '#map-viewport{cursor:' + boatCur + '}' +
+            '#map-strip .country{cursor:default}' +
+            '#map-strip .country.quest{cursor:pointer}';
+        document.head.appendChild(curStyle);
 
         // ── Side panel (slides in from the left) ────────────────────────
         function openPanel(name) {
@@ -77,11 +91,13 @@
             if (e.key === 'Escape') closePanel();
         });
 
-        // ── Fill the viewport below the nav exactly ─────────────────────
+        // ── Fill the space between the nav and the signup banner ────────
         function sizePage() {
             var nav = document.querySelector('main > nav');
             var navH = (nav && nav.offsetHeight) || 0;
-            page.style.setProperty('--sq-h', (window.innerHeight - navH) + 'px');
+            var ban = document.getElementById('signup-banner');
+            var banH = (ban && ban.offsetHeight) || 0;
+            page.style.setProperty('--sq-h', (window.innerHeight - navH - banH) + 'px');
         }
 
         // ── Endless horizontal pan (wraps) + clamped vertical pan ───────
@@ -93,7 +109,6 @@
         var dragging = false;
         var moved = 0;             // distance since pointerdown (click guard)
         var lastX = 0, lastY = 0;
-        var placedY = false;
 
         function clampY() {
             var vh = viewport.clientHeight;
@@ -109,24 +124,17 @@
             var vh = viewport.clientHeight;
             var vw = viewport.clientWidth;
             if (!vh || !vw) return;
-            var w = vw;                       // world spans the full width
-            var h = w / ASPECT;
-            if (h < vh) {                     // very tall window: cover by height
-                h = vh;
-                w = h * ASPECT;
-            }
-            mapW = w;
-            mapH = h;
-            strip.style.height = h + 'px';
+            // Width spans the full viewport (for the endless loop); height is
+            // stretched to fit exactly, so the whole map is always visible —
+            // nothing hides under the banner and no vertical panning needed.
+            mapW = vw;
+            mapH = vh;
+            strip.style.height = vh + 'px';
             strip.style.top = '0px';
             strip.querySelectorAll('svg').forEach(function (s) {
-                s.style.width = w + 'px';
-                s.style.height = h + 'px';
+                s.style.width = vw + 'px';
+                s.style.height = vh + 'px';
             });
-            if (!placedY && mapH > 0) {
-                placedY = true;
-                offsetY = (mapH - vh) / 2;    // start looking at the middle
-            }
             clampY();
         }
 
@@ -157,7 +165,6 @@
             vel = 0;
             lastX = e.clientX;
             lastY = e.clientY;
-            viewport.classList.add('grabbing');
         });
         window.addEventListener('pointermove', function (e) {
             if (!dragging) return;
@@ -173,7 +180,6 @@
         });
         function endDrag() {
             dragging = false;
-            viewport.classList.remove('grabbing');
         }
         window.addEventListener('pointerup', endDrag);
         window.addEventListener('pointercancel', endDrag);
@@ -217,6 +223,9 @@
                 .then(function (r) { return r.text(); })
                 .then(function (svg) {
                     strip.innerHTML = svg + svg + svg;   // three copies = seamless loop
+                    strip.querySelectorAll('svg').forEach(function (s) {
+                        s.setAttribute('preserveAspectRatio', 'none');   // allow y-stretch
+                    });
                     var SVGNS = 'http://www.w3.org/2000/svg';
                     var firstSvg = strip.querySelector('svg');
                     var defs = document.createElementNS(SVGNS, 'defs');
@@ -264,6 +273,10 @@
         sizePage();
         ensureMap();
         tick();
+        // the banner sits after this script in the DOM — re-measure once
+        // the whole document has parsed so its height is counted
+        setTimeout(layout, 0);
+        window.addEventListener('load', layout);
     })();
     </script>
 </div>

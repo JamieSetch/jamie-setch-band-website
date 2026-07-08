@@ -1,20 +1,32 @@
 [
     {
-        "name": "T-Shirt",
+        "id": "white-tee",
+        "name": "White T-Shirt",
         "image": "assets/store/White-T.png",
+        "images": ["assets/store/White-T.png", "assets/store/placeholder.png", "assets/store/placeholder.png"],
         "price": "£24.99",
-        "link": "https://shopify.com"
+        "link": "https://shopify.com",
+        "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+        "details": ["100% organic cotton", "Screen-printed artwork", "Unisex fit — S to XXL"]
     },
     {
-        "name": "Tote bag",
+        "id": "tote",
+        "name": "Tote Bag",
         "image": "assets/store/Tote.png",
+        "images": ["assets/store/Tote.png", "assets/store/placeholder.png", "assets/store/placeholder.png"],
         "price": "£14.99",
-        "link": "https://shopify.com"
+        "link": "https://shopify.com",
+        "description": "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.",
+        "details": ["Heavyweight natural canvas", "Long shoulder straps", "38 × 42 cm"]
     },
     {
+        "id": "mug",
         "name": "White Mug",
         "image": "assets/store/Mug.png",
+        "images": ["assets/store/Mug.png", "assets/store/placeholder.png", "assets/store/placeholder.png"],
         "price": "£12.49",
-        "link": "https://shopify.com"
+        "link": "https://shopify.com",
+        "description": "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
+        "details": ["Ceramic, 11oz", "Dishwasher & microwave safe", "Wraparound print"]
     }
 ]

@@ -27,17 +27,53 @@ def get_store_html():
     items = json.load(f)
     f.close()
 
-    result = ''
+    # Grid of product cards. Each card is a button that opens that product's
+    # detail panel (handled by the store's own script — no page reload).
+    cards = ''
     for item in items:
-        result += f'''
-            <a class="store-item" href="{item['link']}">
-                <img src="{item['image']}" alt="{item['name']}">
+        cards += f'''
+            <button class="store-item" type="button" data-product="{item['id']}">
+                <div class="store-item-img"><img src="{item['image']}" alt="{item['name']}"></div>
                 <div class="item-name">{item['name']}</div>
                 <div class="item-price">{item['price']}</div>
-            </a>
+            </button>
         '''
-    
-    return result
+
+    # One detail panel per product: gallery (main image + thumbnails),
+    # title, price, description and buy link.
+    panels = ''
+    for item in items:
+        images = item.get('images') or [item['image']]
+        thumbs = ''
+        for i, src in enumerate(images):
+            active = ' active' if i == 0 else ''
+            thumbs += f'<button type="button" class="product-thumb{active}" data-src="{src}"><img src="{src}" alt=""></button>'
+
+        details = ''
+        if item.get('details'):
+            lis = ''.join(f'<li>{d}</li>' for d in item['details'])
+            details = f'<ul class="product-details">{lis}</ul>'
+
+        panels += f'''
+            <div class="store-product" id="product-{item['id']}" hidden>
+                <button class="store-back" type="button">&larr; Back to store</button>
+                <div class="product-layout">
+                    <div class="product-gallery">
+                        <div class="product-main"><img src="{images[0]}" alt="{item['name']}"></div>
+                        <div class="product-thumbs">{thumbs}</div>
+                    </div>
+                    <div class="product-info">
+                        <h2>{item['name']}</h2>
+                        <div class="product-price">{item['price']}</div>
+                        <p class="product-desc">{item['description']}</p>
+                        {details}
+                        <a class="product-buy" href="{item['link']}" target="_blank" rel="noopener">Add to cart</a>
+                    </div>
+                </div>
+            </div>
+        '''
+
+    return cards, panels
 
 
 def build():
@@ -53,7 +89,7 @@ def build():
     template = f.read()
     f.close()
 
-    cssFiles = ['nav.css', 'music.css', 'store.css', 'sign-up.css', 'side-quests.css']
+    cssFiles = ['nav.css', 'music.css', 'store.css', 'sign-up.css', 'side-quests.css', 'work.css']
 
     css = ''
     for file in cssFiles:
@@ -94,7 +130,8 @@ def build():
         if page['id'] == 'music':
             contents = contents.replace('{{MUSIC_LIST}}', get_music_html())
         if page['id'] == 'store':
-            contents = contents.replace('{{STORE_ITEMS}}', get_store_html())
+            store_cards, store_panels = get_store_html()
+            contents = contents.replace('{{STORE_ITEMS}}', store_cards).replace('{{STORE_PRODUCTS}}', store_panels)
         pageContents[page['id']] = contents
         f.close()
 

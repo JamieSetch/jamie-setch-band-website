@@ -1,6 +1,70 @@
 <div class="{{HIDDEN}} page" data-nav="{{SHOW_NAV}}" id="store">
-    <h2>Merchandise</h2>
-    <div class="store-items">
-        {{STORE_ITEMS}}
+    <div class="store-view" id="store-grid">
+        <h2>Store</h2>
+        <p class="store-sub">Wear the record. Carry the tour.</p>
+        <div class="store-items">
+            {{STORE_ITEMS}}
+        </div>
     </div>
+
+    {{STORE_PRODUCTS}}
+
+    <script>
+    (function () {
+        var store = document.getElementById('store');
+        var grid = document.getElementById('store-grid');
+
+        function show(el) { el.hidden = false; }
+        function hide(el) { el.hidden = true; }
+
+        function openProduct(id) {
+            var panel = document.getElementById('product-' + id);
+            if (!panel) return;
+            hide(grid);
+            var panels = store.querySelectorAll('.store-product');
+            for (var i = 0; i < panels.length; i++) hide(panels[i]);
+            show(panel);
+            window.scrollTo(0, 0);
+        }
+
+        function backToGrid() {
+            var panels = store.querySelectorAll('.store-product');
+            for (var i = 0; i < panels.length; i++) hide(panels[i]);
+            show(grid);
+            window.scrollTo(0, 0);
+        }
+
+        // Open a product from its grid card
+        var cards = store.querySelectorAll('.store-item');
+        for (var i = 0; i < cards.length; i++) {
+            cards[i].addEventListener('click', function () {
+                openProduct(this.getAttribute('data-product'));
+            });
+        }
+
+        // Back buttons
+        var backs = store.querySelectorAll('.store-back');
+        for (var b = 0; b < backs.length; b++) {
+            backs[b].addEventListener('click', backToGrid);
+        }
+
+        // Gallery thumbnails swap the main image
+        var thumbs = store.querySelectorAll('.product-thumb');
+        for (var t = 0; t < thumbs.length; t++) {
+            thumbs[t].addEventListener('click', function () {
+                var panel = this.closest('.store-product');
+                var main = panel.querySelector('.product-main img');
+                main.src = this.getAttribute('data-src');
+                var sibs = panel.querySelectorAll('.product-thumb');
+                for (var s = 0; s < sibs.length; s++) sibs[s].classList.remove('active');
+                this.classList.add('active');
+            });
+        }
+
+        // Reset to the grid whenever the store page is (re)shown
+        new MutationObserver(function () {
+            if (!store.classList.contains('hidden')) backToGrid();
+        }).observe(store, { attributes: true, attributeFilter: ['class'] });
+    })();
+    </script>
 </div>

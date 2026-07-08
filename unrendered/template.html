@@ -21,10 +21,10 @@
                 <h1>Jamie Setch</h1>
                 <div class="links">
                     <a href="/home" data-navid="home" class="nav-link">Home</a>
-                    <a href="/about-me" data-navid="about-me" class="nav-link">About</a>
-                    <a href="/work" data-navid="work" class="nav-link">Work</a>
-                    <a href="/music" data-navid="music" class="nav-link">Music</a>
-                    <a href="/side-quests" data-navid="side-quests" class="nav-link">Side Quests</a>
+                    <a href="/about-me" data-navid="about-me" class="nav-link hidden">About</a>
+                    <a href="/work" data-navid="work" class="nav-link hidden">Work</a>
+                    <a href="/music" data-navid="music" class="nav-link">Starlings</a>
+                    <a href="/side-quests" data-navid="side-quests" class="nav-link">Travel</a>
                 </div>
             </div>
             <div class="nav-store">
@@ -45,10 +45,10 @@
     <div class="side-nav-close" onclick="site.toggleSideNav()"></div>
     <div class="side-nav">
         <a href="/home" data-navid="home" class="nav-link">Home</a>
-        <a href="/about-me" data-navid="about-me" class="nav-link">About</a>
-        <a href="/work" data-navid="work" class="nav-link">Work</a>
-        <a href="/music" data-navid="music" class="nav-link">Music</a>
-        <a href="/side-quests" data-navid="side-quests" class="nav-link">Side Quests</a>
+        <a href="/about-me" data-navid="about-me" class="nav-link hidden">About</a>
+        <a href="/work" data-navid="work" class="nav-link hidden">Work</a>
+        <a href="/music" data-navid="music" class="nav-link">Starlings</a>
+        <a href="/side-quests" data-navid="side-quests" class="nav-link">Travel</a>
         <a href="/store" data-navid="store" class="nav-link">Store</a>
         <div class="side-nav-socials">
             {{SOCIALS}}
@@ -69,6 +69,7 @@
 
     <div class="signup-banner" id="signup-banner" onclick="site.navigateTo('sign-up')">
         <canvas id="murmuration" class="murmuration"></canvas>
+        <canvas id="adventure" class="adventure"></canvas>
         <span class="signup-banner-text" id="signup-banner-text">Become a Starling</span>
     </div>
 
@@ -174,18 +175,21 @@
         // so we watch the page divs directly — robust to any navigation path.
         var banner = document.getElementById('signup-banner');
         var bannerText = document.getElementById('signup-banner-text');
+        var advCanvas = document.getElementById('adventure');
         var BANNER_PAGES = {
-            'music': 'Become a Starling',
-            'side-quests': 'Join an Adventure'
+            'music': { text: 'Become a Starling', canvas: 'murmuration' },
+            'side-quests': { text: 'Join an Adventure', canvas: 'adventure' }
         };
         function visiblePageId() {
             var el = document.querySelector('.page:not(.hidden)');
             return el ? el.id : '';
         }
         function updateBanner() {
-            var text = BANNER_PAGES[visiblePageId()];
-            if (text) {
-                bannerText.textContent = text;
+            var cfg = BANNER_PAGES[visiblePageId()];
+            if (cfg) {
+                bannerText.textContent = cfg.text;
+                canvas.style.display = (cfg.canvas === 'murmuration') ? '' : 'none';
+                advCanvas.style.display = (cfg.canvas === 'adventure') ? '' : 'none';
                 banner.style.transform = 'translateY(0)';
             } else {
                 banner.style.transform = 'translateY(100%)';
@@ -197,6 +201,211 @@
         });
         updateBanner();
         window.addEventListener('popstate', updateBanner);
+
+        // ── Countdown to flight (1 January 2027) ───────────────────────
+        var TARGET = Date.UTC(2027, 0, 1, 0, 0, 0);   // months are 0-indexed
+        var timerEl = document.getElementById('countdown-timer');
+        function pad(n) { return (n < 10 ? '0' : '') + n; }
+        function tickCountdown() {
+            if (!timerEl) return;
+            var diff = Math.floor((TARGET - Date.now()) / 1000);
+            if (diff < 0) diff = 0;
+            var days = Math.floor(diff / 86400); diff -= days * 86400;
+            var hrs = Math.floor(diff / 3600); diff -= hrs * 3600;
+            var mins = Math.floor(diff / 60);
+            var secs = diff - mins * 60;
+            timerEl.textContent = pad(days) + ':' + pad(hrs) + ':' + pad(mins) + ':' + pad(secs);
+        }
+        tickCountdown();
+        setInterval(tickCountdown, 1000);
+    })();
+    </script>
+
+    <script>
+    (function () {
+        // ── Corner scuba scene: a stick diver and some fish ────────────
+        // Lives in the right corner of the "Join an Adventure" banner.
+        // Everything is a pure function of time — window.__advSeek(sec)
+        // freezes a frame for QA, window.__advSeek(null) resumes.
+        var canvas = document.getElementById('adventure');
+        var ctx = canvas.getContext('2d');
+        var dpr = window.devicePixelRatio || 1;
+        var W = 0, H = 0;
+        var PI = Math.PI, TAU = PI * 2;
+
+        function resize() {
+            W = canvas.clientWidth;
+            H = canvas.clientHeight;
+            canvas.width = W * dpr;
+            canvas.height = H * dpr;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+
+        function L(a, b) { ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); }
+        // point from (x,y) at angle a (0 = up, PI/2 = right), length len
+        function P(x, y, a, len) { return [x + Math.sin(a) * len, y - Math.cos(a) * len]; }
+
+        // ── The diver (faces left, drifts on a lazy ellipse) ────────────
+        function diver(dx, dy, t) {
+            ctx.save();
+            ctx.translate(dx, dy);
+            ctx.rotate(0.07 * Math.sin(t * 0.5));
+            // torso
+            L([0, 0], [-9, -1.8]);
+            // head + mask
+            ctx.beginPath();
+            ctx.arc(-12.3, -2.6, 2.4, 0, TAU);
+            ctx.fill();
+            L([-14.8, -3.6], [-15.1, -1.7]);
+            // tank on the back (drawn heavier)
+            ctx.lineWidth = 2.4;
+            L([-7.5, -4.8], [-2.5, -4.2]);
+            ctx.lineWidth = 1.3;
+            // regulator hose
+            ctx.beginPath();
+            ctx.moveTo(-7.5, -4.6);
+            ctx.quadraticCurveTo(-13, -6, -13.6, -3.6);
+            ctx.stroke();
+            // arms: one reaching ahead, one trailing
+            L([-9, -1.8], [-12.5, 1.3]);
+            L([-12.5, 1.3], [-16, 2.1]);
+            L([-9, -1.8], [-6.8, 2.4]);
+            L([-6.8, 2.4], [-8.8, 4.6]);
+            // legs + fins, flutter kick
+            var c = t * 3.4;
+            var phs = [0, PI * 0.9];
+            for (var i = 0; i < 2; i++) {
+                var th = PI / 2 + 0.22 * Math.sin(c + phs[i]);
+                var kn = P(0, 0, th, 6.5);
+                var sh = th + 0.28 * Math.sin(c + phs[i] + 0.9);
+                var an = P(kn[0], kn[1], sh, 5.5);
+                L([0, 0], kn);
+                L(kn, an);
+                L(an, P(an[0], an[1], sh + 0.15, 4.2));   // fin
+            }
+            ctx.restore();
+            // bubble train rising from the regulator
+            for (var j = 0; j < 4; j++) {
+                var b = (t * 0.55 + j * 0.27) % 1;
+                ctx.save();
+                ctx.globalAlpha = (1 - b) * 0.5;
+                ctx.beginPath();
+                ctx.arc(dx - 13 + Math.sin(b * 9 + j * 2) * 2.5, dy - 6 - b * (dy - 4), 0.8 + b * 1.8, 0, TAU);
+                ctx.stroke();
+                ctx.restore();
+            }
+        }
+
+        // ── Fish: lens body, waggling tail, dorsal tick ─────────────────
+        function fish(cx, cy, s, dir, t, ph) {
+            ctx.save();
+            ctx.translate(cx, cy);
+            ctx.scale(dir * s, s);
+            var tw = Math.sin(t * 5 + ph) * 0.9;
+            ctx.beginPath();
+            ctx.moveTo(4, 0);
+            ctx.quadraticCurveTo(0, -2.6, -4, 0);
+            ctx.quadraticCurveTo(0, 2.6, 4, 0);
+            ctx.stroke();
+            L([-4, 0], [-6.5, -1.8 + tw]);
+            L([-4, 0], [-6.5, 1.8 + tw]);
+            L([-0.5, -2.2], [1, -3.2]);
+            ctx.restore();
+        }
+
+        function seaweed(bx, floorY, h, ph, t) {
+            ctx.beginPath();
+            ctx.moveTo(bx, floorY);
+            for (var j = 1; j <= 4; j++) {
+                ctx.lineTo(bx + Math.sin(t * 0.9 + ph + j * 0.7) * (j * 0.9), floorY - j * (h / 4));
+            }
+            ctx.stroke();
+        }
+
+        var start = null, seekT = null;
+        window.__advSeek = function (v) { seekT = (typeof v === 'number') ? v : null; };
+
+        function tick(now) {
+            requestAnimationFrame(tick);
+            if (canvas.clientWidth === 0) return;   // hidden (other page)
+            if (canvas.clientWidth !== W || canvas.clientHeight !== H) resize();
+            if (start === null) start = now;
+            var t = (seekT !== null) ? seekT : (now - start) / 1000;
+
+            ctx.clearRect(0, 0, W, H);
+            ctx.strokeStyle = '#ffffff';
+            ctx.fillStyle = '#ffffff';
+            ctx.lineWidth = 1.3;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            var floorY = H - 6;
+
+            // surface shimmer, broken strokes along the whole bar
+            ctx.save();
+            ctx.globalAlpha = 0.1;
+            var nsh = Math.ceil(W / 170);
+            for (var sh = 0; sh < nsh; sh++) {
+                ctx.beginPath();
+                for (var x = 0; x <= 56; x += 4) {
+                    var wx = 20 + sh * 170 + x;
+                    var wy = 6 + Math.sin(x * 0.3 + t * 1.6 + sh * 2) * 1.2;
+                    if (x === 0) ctx.moveTo(wx, wy); else ctx.lineTo(wx, wy);
+                }
+                ctx.stroke();
+            }
+            // sea floor + scattered pebbles
+            ctx.globalAlpha = 0.12;
+            L([2, floorY + 2], [W - 2, floorY + 2]);
+            ctx.globalAlpha = 0.18;
+            for (var pb = 0; pb < 7; pb++) {
+                var pf = Math.sin(pb * 91.7) * 43758.5453;
+                pf = pf - Math.floor(pf);
+                ctx.beginPath();
+                ctx.arc(20 + pf * (W - 40), floorY + 1.6, 1 + (pb % 3) * 0.35, PI, 0);
+                ctx.stroke();
+            }
+            // seaweed clumps across the bar
+            ctx.globalAlpha = 0.25;
+            var weeds = [
+                [0.03, 14], [0.055, 20], [0.075, 11],
+                [0.31, 12], [0.335, 17],
+                [0.62, 10], [0.645, 15],
+                [0.925, 12], [0.95, 20], [0.97, 15]
+            ];
+            for (var wd = 0; wd < weeds.length; wd++) {
+                seaweed(W * weeds[wd][0], floorY + 2, weeds[wd][1], wd * 0.8, t);
+            }
+            ctx.restore();
+
+            // a small school heading left
+            ctx.save();
+            ctx.globalAlpha = 0.5;
+            for (var i = 0; i < 3; i++) {
+                var fx = W + 30 - ((t * 12 + i * 14) % (W + 70));
+                var fy = 16 + i * 7 + 2 * Math.sin(t * 1.8 + i * 1.3);
+                fish(fx, fy, 0.8, -1, t, i * 1.7);
+            }
+            // a pair cruising right at mid-depth
+            for (var j2 = 0; j2 < 2; j2++) {
+                var px = -25 + ((t * 10 + 160 + j2 * 18) % (W + 70));
+                fish(px, 30 + j2 * 6 + 2 * Math.sin(t * 1.6 + j2), 0.9, 1, t, j2 * 2.3 + 1);
+            }
+            // a bigger loner cruising right, deeper
+            ctx.globalAlpha = 0.6;
+            fish(-25 + ((t * 8.5 + 50) % (W + 70)), 46 + 2.5 * Math.sin(t * 1.4), 1.3, 1, t, 3.1);
+            // a tiny one pottering near the weeds
+            ctx.globalAlpha = 0.35;
+            fish(W + 30 - ((t * 6 + 90) % (W + 70)), 58 + 1.5 * Math.sin(t * 2.1), 0.6, -1, t, 5.2);
+            ctx.restore();
+
+            // the diver patrols the whole bar, right to left, and wraps
+            ctx.globalAlpha = 0.95;
+            diver(W + 40 - ((t * 10) % (W + 90)),
+                  32 + 6 * Math.sin(t * 0.33 + 1.2), t);
+            ctx.globalAlpha = 1;
+        }
+        requestAnimationFrame(tick);
     })();
     </script>
 </body>

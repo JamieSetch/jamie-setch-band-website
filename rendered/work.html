@@ -131,17 +131,21 @@ nav > .main-nav > .links > a.selected,
 
 nav > .main-nav > .links > a::before,
 nav > .main-nav > .links > a::after,
+nav > .nav-store > a::before,
+nav > .nav-store > a::after,
 #sign-up > button::before,
 #sign-up > button::after {
     content: "";
     position: absolute;
     transition: var(--hover-speed) all;
+    --hover-speed: 0.5s;
     width: 0;
     height: 0;
     opacity: 0;
 }
 
 nav > .main-nav > .links > a::before,
+nav > .nav-store > a::before,
 #sign-up > button::before {
     top: 0;
     left: 0;
@@ -150,6 +154,7 @@ nav > .main-nav > .links > a::before,
 }
 
 nav > .main-nav > .links > a::after,
+nav > .nav-store > a::after,
 #sign-up > button::after {
     bottom: 0;
     right: 0;
@@ -160,6 +165,8 @@ nav > .main-nav > .links > a::after,
 
 nav > .main-nav > .links > a:hover::before,
 nav > .main-nav > .links > a:hover::after,
+nav > .nav-store > a:hover::before,
+nav > .nav-store > a:hover::after,
 #sign-up > button:hover::before,
 #sign-up > button:hover::after {
     width: 100%;
@@ -320,7 +327,7 @@ nav[data-size="full"] > .nav-store {
 }
 
 nav[data-size="top-bar"] > .nav-store {
-    display: flex;
+    display: block;
     align-self: center;
     padding: 0;
 }
@@ -350,6 +357,7 @@ nav > .nav-store > a.selected {
     right: 0;
     height: 72px;
     background-color: var(--primary-grey);
+    border-top: 1px solid var(--primary-clr-transparent);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -360,7 +368,8 @@ nav > .nav-store > a.selected {
     z-index: 5;
 }
 
-.murmuration {
+.murmuration,
+.adventure {
     position: absolute;
     inset: 0;
     width: 100%;
@@ -374,10 +383,17 @@ nav > .nav-store > a.selected {
     text-transform: uppercase;
     font-size: 0.9em;
     text-shadow: 0 0 8px rgba(46, 46, 46, 0.9);
+    transition: 0.3s color;
 }
 
+.signup-banner-text:hover {
+    color: var(--primary-clr);
+}
+
+
 @media (max-width: 800px) {
-    .murmuration {
+    .murmuration,
+    .adventure {
         display: none;
     }
 }#music {
@@ -388,6 +404,113 @@ nav > .nav-store > a.selected {
     box-sizing: border-box;
     background-color: var(--primary-white);
     color: var(--primary-grey);
+}
+
+/* ── Countdown bar (sits directly below the nav) ────────────── */
+.music-countdown {
+    margin: -3em -3em 0;          /* full-bleed: cancel #music padding */
+    height: 72px;
+    background-color: var(--primary-grey);
+    border-bottom: 1px solid var(--primary-clr-transparent);
+    color: var(--primary-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.2em;
+    flex-wrap: wrap;
+    text-align: center;
+    padding: 0 1em;
+    box-sizing: border-box;
+}
+
+.music-countdown .countdown-label {
+    text-transform: uppercase;
+    font-weight: 800;
+    font-size: 1.6em;
+    letter-spacing: 0.06em;
+    line-height: 1;
+}
+
+.music-countdown .countdown-timer {
+    font-weight: 800;
+    font-size: 1.6em;
+    letter-spacing: 0.12em;
+    line-height: 1;
+    color: var(--primary-white);
+    font-variant-numeric: tabular-nums;
+}
+
+/* ── Video section — fills the screen (so the albums below stay
+   hidden behind the bottom banner) and centres a 16:9 video box ── */
+.video-section {
+    height: calc(100vh - 216px);   /* viewport minus nav + countdown + bottom banner */
+    min-height: 300px;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2em 3em;
+    box-sizing: border-box;
+}
+
+.video-card {
+    display: block;
+    height: 100%;
+    max-width: 100%;
+    text-decoration: none;
+    color: inherit;
+}
+
+.video-thumb {
+    position: relative;
+    height: 100%;               /* keep the vertical size, derive width from 16:9 */
+    aspect-ratio: 16 / 9;
+    max-width: 100%;
+    margin: 0 auto;
+    background: linear-gradient(135deg, #2E2E2E, #1a1a1a);
+    display: grid;
+    place-content: center;
+    overflow: hidden;
+    transition: 0.3s filter;
+}
+
+.video-card:hover .video-thumb {
+    filter: brightness(1.15);
+}
+
+.video-play {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 22px 0 22px 38px;
+    border-color: transparent transparent transparent var(--primary-white);
+    filter: drop-shadow(0 0 12px rgba(0, 0, 0, 0.5));
+    transition: 0.3s transform;
+}
+
+.video-card:hover .video-play {
+    transform: scale(1.12);
+}
+
+.video-meta {
+    display: flex;
+    align-items: baseline;
+    gap: 1em;
+    margin-top: 0.9em;
+}
+
+.video-label {
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-size: 0.75em;
+    color: var(--primary-clr-dark, #b89a00);
+    font-weight: 700;
+}
+
+.video-title {
+    font-size: 1.1em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .album-section {
@@ -488,44 +611,230 @@ nav > .nav-store > a.selected {
 #store {
     color: var(--primary-grey);
     background-color: var(--primary-white);
-    padding-bottom: 5em;
-    min-height: 100vh;
+    padding: 0 3em 2em;
+    box-sizing: border-box;
+    /* fill the viewport minus the 72px top-bar nav, so a short grid
+       doesn't push the page past 100vh and spawn a scrollbar */
+    min-height: calc(100vh - 72px);
 }
 
 #store h2 {
     text-align: center;
     text-transform: uppercase;
-    padding-top: 1em;
-    padding-bottom: 0.5em;
-    margin:0;
+    letter-spacing: 0.15em;
+    padding-top: 0.6em;
+    padding-bottom: 0.15em;
+    margin: 0;
     font-size: 3em;
 }
 
-
-.store-items {
-    display: flex;
-    place-content: center;
+.store-sub {
     text-align: center;
-    gap: 1em;
-    flex-wrap: wrap;
-    max-width: 50em;
+    margin: 0 0 2.5em;
+    font-size: 0.95em;
+    letter-spacing: 0.05em;
+    color: rgba(46, 46, 46, 0.55);
+}
+
+/* ── Product grid ─────────────────────────────────────────── */
+.store-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 2.5em 2em;
+    max-width: 62em;
     margin: auto;
 }
 
 .store-item {
     color: inherit;
-    text-decoration: none;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    text-align: center;
+    font: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
 }
 
-.store-item > img {
-    display: block;
-    width: 10em;
-    height: 10em;
+.store-item-img {
+    aspect-ratio: 1 / 1;
+    background-color: #f2eee9;
+    overflow: hidden;
+}
+
+.store-item-img > img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
+    transition: 0.4s transform;
+}
+
+.store-item:hover .store-item-img > img {
+    transform: scale(1.05);
 }
 
 .store-item > .item-name {
-    font-size: 1.5em;
+    font-size: 1.15em;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    transition: 0.3s color;
+}
+
+.store-item:hover > .item-name {
+    color: var(--primary-clr-dark, #b89a00);
+}
+
+.store-item > .item-price {
+    font-size: 0.9em;
+    color: rgba(46, 46, 46, 0.6);
+}
+
+/* ── Product detail ───────────────────────────────────────── */
+.store-back {
+    background: none;
+    border: none;
+    font: inherit;
+    cursor: pointer;
+    color: inherit;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.8em;
+    padding: 2em 0 0;
+    opacity: 0.7;
+    transition: 0.3s opacity;
+}
+
+.store-back:hover {
+    opacity: 1;
+}
+
+.product-layout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3.5em;
+    max-width: 62em;
+    margin: 1.5em auto 0;
+    align-items: flex-start;
+}
+
+.product-gallery {
+    flex: 1 1 340px;
+    min-width: 300px;
+}
+
+.product-main {
+    aspect-ratio: 1 / 1;
+    background-color: #f2eee9;
+    overflow: hidden;
+}
+
+.product-main > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.product-thumbs {
+    display: flex;
+    gap: 0.8em;
+    margin-top: 0.8em;
+}
+
+.product-thumb {
+    flex: 0 0 auto;
+    width: 4.5em;
+    height: 4.5em;
+    padding: 0;
+    border: 1px solid transparent;
+    background-color: #f2eee9;
+    cursor: pointer;
+    overflow: hidden;
+    opacity: 0.7;
+    transition: 0.25s all;
+}
+
+.product-thumb:hover {
+    opacity: 1;
+}
+
+.product-thumb.active {
+    opacity: 1;
+    border-color: var(--primary-grey);
+}
+
+.product-thumb > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.product-info {
+    flex: 1 1 320px;
+    min-width: 280px;
+}
+
+.product-info > h2 {
+    text-align: left;
+    padding: 0;
+    font-size: 2.2em;
+    margin-bottom: 0.2em;
+}
+
+.product-price {
+    font-size: 1.3em;
+    color: rgba(46, 46, 46, 0.7);
+    margin-bottom: 1.5em;
+}
+
+.product-desc {
+    line-height: 1.8;
+    color: rgba(46, 46, 46, 0.8);
+    margin: 0 0 1.5em;
+}
+
+.product-details {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2em;
+    border-top: 1px solid rgba(46, 46, 46, 0.15);
+}
+
+.product-details > li {
+    padding: 0.7em 0;
+    border-bottom: 1px solid rgba(46, 46, 46, 0.15);
+    font-size: 0.9em;
+    letter-spacing: 0.03em;
+}
+
+.product-buy {
+    display: inline-block;
+    text-decoration: none;
+    color: var(--primary-white);
+    background-color: var(--primary-grey);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-size: 0.85em;
+    padding: 1em 2.5em;
+    transition: 0.3s background-color;
+}
+
+.product-buy:hover {
+    background-color: #000;
+}
+
+@media (max-width: 640px) {
+    #store {
+        padding: 0 1.5em 4em;
+    }
+    #store h2 {
+        font-size: 2.2em;
+    }
+    .product-layout {
+        gap: 2em;
+    }
 }
 
 
@@ -590,12 +899,8 @@ nav > .nav-store > a.selected {
     position: absolute;
     inset: 0;
     overflow: hidden;
-    cursor: grab;
     touch-action: none;
-}
-
-.map-viewport.grabbing {
-    cursor: grabbing;
+    /* cursor (sailboat / paper plane) is set by the page script */
 }
 
 .map-strip {
@@ -627,10 +932,6 @@ nav > .nav-store > a.selected {
     fill: none;
     stroke: rgba(255, 255, 255, 0.07);
     stroke-width: 0.5;
-}
-
-.map-strip .country.quest {
-    cursor: pointer;
 }
 
 .map-strip .country.quest:hover {
@@ -739,6 +1040,411 @@ nav > .nav-store > a.selected {
         display: none;
     }
 }
+/* ── Work: one filing drawer, folders nested front-to-back ────────── */
+
+#work {
+    min-height: calc(100dvh - 4em);
+    box-sizing: border-box;
+    background:
+        radial-gradient(120% 80% at 50% -10%, #3a3a3a 0%, var(--primary-grey) 45%, #232323 100%);
+    color: white;
+    padding: 2.4em 1.5em 4em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: clip;   /* folder edges never spawn a scrollbar */
+}
+
+.work-inner {
+    width: min(1100px, 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.work-header {
+    text-align: center;
+    margin-bottom: 0.6em;
+}
+
+.work-header h2 {
+    margin: 0;
+    font-size: 2.2em;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+}
+
+.work-sub {
+    margin: 0.2em 0 0;
+    font-size: 0.62em;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* ── The drawer: one open drawer, sections filed behind each other ──
+   --n is set by the page script to the number of folders.            */
+.file-drawer {
+    position: relative;
+    width: min(36em, 94vw);
+    /* folder height + one sliver per folder behind + lip + hover headroom */
+    height: calc(15.4em + (var(--n, 5) - 1) * 2.7em + 1.7em);
+    margin-top: 0.6em;
+}
+
+/* the drawer cavity — dark box the folders sit inside */
+.file-drawer::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 4.2em;
+    border-radius: 12px 12px 10px 10px;
+    background: linear-gradient(#161616, #262626 30%, #1e1e1e);
+    box-shadow:
+        inset 0 16px 20px rgba(0, 0, 0, 0.55),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.05),
+        0 18px 34px rgba(0, 0, 0, 0.5);
+    z-index: 0;
+}
+
+/* the front wall / lip of the drawer, in front of the folder bottoms */
+.drawer-lip {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3.4em;
+    border-radius: 0 0 10px 10px;
+    background:
+        linear-gradient(#4a4a4a, #2b2b2b 60%, #1c1c1c);
+    box-shadow:
+        inset 0 2px 0 rgba(255, 255, 255, 0.08),
+        inset 0 -10px 22px rgba(0, 0, 0, 0.5),
+        0 14px 30px rgba(0, 0, 0, 0.5);
+    z-index: 40;
+    pointer-events: none;
+}
+.drawer-lip::before {   /* metal pull handle */
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 1.2em;
+    transform: translateX(-50%);
+    width: 5.5em;
+    height: 0.7em;
+    border-radius: 0.7em;
+    background: linear-gradient(#8f8f8f, #d8d8d8 40%, #6f6f6f);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+/* ── A single manila folder in the stack ─────────────────────────────
+   --i (set by the script) is the folder's position: 0 = front.
+   Each folder behind sits 2.7em higher, a shade darker, a whisker
+   narrower — a drawer full of files seen from the front.             */
+.folder {
+    --manila-top: #ecd196;
+    --manila-mid: #e2be74;
+    --manila-bot: #d3ac60;
+    position: absolute;
+    left: 50%;
+    bottom: 2.2em;
+    width: min(31em, 86vw);
+    /* the button is just the manila body — tab and papers overflow above
+       it, so the hit area matches the visible silhouette and never sits
+       over the folder filed behind */
+    height: 9.6em;
+    display: block;
+    cursor: pointer;
+    transform-origin: 50% 100%;
+    transform:
+        translateX(calc(-50% + var(--jx, 0em)))
+        translateY(calc(var(--i, 0) * -2.7em - var(--lift, 0em)))
+        scale(calc(1 - var(--i, 0) * 0.018));
+    transition: transform 0.32s cubic-bezier(.22,.9,.28,1), filter 0.3s;
+    filter:
+        brightness(calc(1 - var(--i, 0) * 0.05))
+        drop-shadow(0 -0.5em 0.65em rgba(0, 0, 0, 0.4));
+    -webkit-tap-highlight-color: transparent;
+}
+/* the files aren't machine-aligned — a nudge either way */
+.folder:nth-child(even) { --jx: 0.3em; }
+.folder:nth-child(odd)  { --jx: -0.2em; }
+
+.folder:hover,
+.folder:focus-visible {
+    --lift: 1.7em;
+    filter:
+        brightness(1.02)
+        drop-shadow(0 -0.7em 0.9em rgba(0, 0, 0, 0.55));
+}
+
+/* white papers peeking out of the top — just a sliver, so the manila
+   edge of every folder stays the star of each row */
+.folder-papers {
+    position: absolute;
+    left: 0.8em;
+    right: 0.8em;
+    top: -0.4em;
+    bottom: 0.4em;
+}
+.folder-papers i {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 100%;
+    border-radius: 3px 3px 2px 2px;
+    background: linear-gradient(#ffffff, #f3efe6);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+.folder-papers i:nth-child(1) { transform: translate(-0.5em, -0.22em); background: linear-gradient(#fbf7ee, #efe9dc); }
+.folder-papers i:nth-child(2) { transform: translate(0.35em, -0.12em); background: linear-gradient(#fffdf8, #f1ece1); }
+.folder-papers i:nth-child(3) { transform: translate(-0.05em, -0.05em); }
+
+/* the front folder gets the stuffed-full look
+   (first-of-type: the drawer-lip div is the container's first child) */
+.folder:first-of-type .folder-papers { top: -1em; }
+.folder:first-of-type .folder-papers i:nth-child(1) { transform: translate(-0.5em, -0.5em) rotate(-0.7deg); }
+.folder:first-of-type .folder-papers i:nth-child(2) { transform: translate(0.35em, -0.26em) rotate(0.5deg); }
+
+/* the manila front panel */
+.folder-body {
+    position: absolute;
+    inset: 0;
+    border-radius: 5px 5px 7px 7px;
+    background:
+        linear-gradient(160deg, rgba(255,255,255,0.28), rgba(255,255,255,0) 30%),
+        repeating-linear-gradient(92deg, rgba(140,100,40,0.05) 0 2px, rgba(140,100,40,0) 2px 5px),
+        linear-gradient(var(--manila-top), var(--manila-mid) 52%, var(--manila-bot));
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.45),
+        inset 0 -1.4em 1.6em rgba(150, 108, 46, 0.28),
+        inset 0 0 0 1px rgba(120, 86, 34, 0.35);
+}
+/* the fold crease across the bottom of the pocket */
+.folder-body::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: 0.9em;
+    height: 1px;
+    background: rgba(120, 86, 34, 0.4);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+/* the labelled tab — rises out of the folder top */
+.folder-tab {
+    position: absolute;
+    top: -1.9em;
+    width: 8em;
+    height: 2.4em;
+    box-sizing: border-box;
+    padding: 0 0.5em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    /* trapezoid with angled shoulders */
+    clip-path: polygon(7% 0, 93% 0, 100% 100%, 0 100%);
+    background:
+        linear-gradient(rgba(255,255,255,0.32), rgba(255,255,255,0) 40%),
+        linear-gradient(var(--manila-top), var(--manila-mid));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    border-top: 3px solid var(--accent, #c6543e);
+    border-radius: 5px 5px 0 0;
+}
+/* staggered tab cuts, like a real set of dividers */
+.folder.tab-l .folder-tab { left: 1em; }
+.folder.tab-c .folder-tab { left: 50%; transform: translateX(-50%); }
+.folder.tab-r .folder-tab { right: 1em; }
+
+.tab-label {
+    font-size: 0.42em;
+    line-height: 1.15;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #5c421c;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+/* ── The opened-folder reader ────────────────────────────────────── */
+body.reader-open { overflow: hidden; }
+
+.folder-reader {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.2em;
+    box-sizing: border-box;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.28s;
+}
+.folder-reader.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.reader-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 10, 10, 0.72);
+    backdrop-filter: blur(2px);
+}
+
+.open-folder {
+    --manila-top: #ecd196;
+    --manila-mid: #e2be74;
+    --manila-bot: #d3ac60;
+    position: relative;
+    width: min(620px, 100%);
+    max-height: 88dvh;
+    padding: 3.1em 0.9em 1.6em;
+    box-sizing: border-box;
+    transform: translateY(26px) scale(0.96);
+    transition: transform 0.34s cubic-bezier(.2,.9,.25,1.1);
+    filter: drop-shadow(0 30px 44px rgba(0, 0, 0, 0.6));
+}
+.folder-reader.open .open-folder { transform: translateY(0) scale(1); }
+
+/* the back half of the opened manila folder */
+.open-folder-back {
+    position: absolute;
+    inset: 1.4em 0 0 0;
+    border-radius: 8px;
+    background:
+        linear-gradient(150deg, rgba(255,255,255,0.22), rgba(255,255,255,0) 26%),
+        linear-gradient(var(--manila-top), var(--manila-mid) 55%, var(--manila-bot));
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.5),
+        inset 0 0 0 1px rgba(120, 86, 34, 0.35);
+}
+
+/* the tab on the opened folder */
+.open-folder-tab {
+    position: absolute;
+    top: 0;
+    left: 2.2em;
+    min-width: 7em;
+    max-width: 60%;
+    height: 2.1em;
+    box-sizing: border-box;
+    padding: 0 1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    clip-path: polygon(7% 0, 93% 0, 100% 100%, 0 100%);
+    background: linear-gradient(var(--manila-top), var(--manila-mid));
+    border-top: 3px solid var(--accent, #c6543e);
+    border-radius: 6px 6px 0 0;
+    font-size: 0.46em;
+    line-height: 1.1;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #5c421c;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+/* the front flap folded down at the bottom */
+.open-folder-front {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 1.1em;
+    border-radius: 0 0 9px 9px;
+    background: linear-gradient(rgba(160,116,50,0.15), var(--manila-bot));
+    box-shadow: inset 0 2px 4px rgba(120, 86, 34, 0.4);
+}
+
+/* the sheet of paper carrying the content */
+.paper {
+    position: relative;
+    z-index: 2;
+    background:
+        linear-gradient(#fffdf8, #fbf7ee);
+    border-radius: 3px;
+    box-shadow:
+        0 2px 3px rgba(0, 0, 0, 0.18),
+        0 14px 26px rgba(0, 0, 0, 0.22);
+    padding: 1.6em 1.7em 1.9em;
+    max-height: calc(88dvh - 5em);
+    overflow-y: auto;
+    color: var(--primary-grey);
+}
+
+.paper-accent {
+    height: 5px;
+    width: 3.4em;
+    border-radius: 3px;
+    margin-bottom: 0.9em;
+}
+
+.paper h3 {
+    font: inherit;
+    margin: 0 0 1.1em;
+    font-size: 1.05em;
+    line-height: 1.2;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--primary-grey);
+}
+
+.reader-close {
+    position: absolute;
+    top: 0.35em;
+    right: 0.55em;
+    font-size: 1.5em;
+    line-height: 1;
+    color: var(--primary-grey);
+    opacity: 0.55;
+}
+.reader-close:hover { opacity: 1; color: var(--accent, #c6543e); }
+
+/* ── Document entries on the paper ───────────────────────────────── */
+.doc-entry {
+    padding: 0 0 1.1em;
+    margin-bottom: 1.1em;
+    border-bottom: 1px solid rgba(46, 46, 46, 0.12);
+}
+.doc-entry:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+.doc-entry-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1em;
+}
+.doc-role {
+    font-size: 0.72em;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--primary-grey);
+}
+.doc-dates {
+    flex: 0 0 auto;
+    font-size: 0.55em;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(46, 46, 46, 0.45);
+}
+.doc-org {
+    font-size: 0.62em;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent, #c6543e);
+    margin-top: 0.2em;
+}
+.doc-desc {
+    font-size: 0.62em;
+    line-height: 1.9;
+    letter-spacing: 0.06em;
+    margin: 0.5em 0 0;
+    color: rgba(46, 46, 46, 0.7);
+}
 </style>
 </head>
 <body>
@@ -794,7 +1500,7 @@ nav > .nav-store > a.selected {
                 </svg>
             </a>
         
-            <a href="https://www.instagram.com/jamiesetch">
+            <a href="https://www.instagram.com/jamie_setch/">
 
                 <svg width="200" height="200">
                     <defs>
@@ -830,10 +1536,10 @@ nav > .nav-store > a.selected {
                 <h1>Jamie Setch</h1>
                 <div class="links">
                     <a href="/home" data-navid="home" class="nav-link">Home</a>
-                    <a href="/about-me" data-navid="about-me" class="nav-link">About</a>
-                    <a href="/work" data-navid="work" class="nav-link">Work</a>
-                    <a href="/music" data-navid="music" class="nav-link">Music</a>
-                    <a href="/side-quests" data-navid="side-quests" class="nav-link">Side Quests</a>
+                    <a href="/about-me" data-navid="about-me" class="nav-link hidden">About</a>
+                    <a href="/work" data-navid="work" class="nav-link hidden">Work</a>
+                    <a href="/music" data-navid="music" class="nav-link">Starlings</a>
+                    <a href="/side-quests" data-navid="side-quests" class="nav-link">Travel</a>
                 </div>
             </div>
             <div class="nav-store">
@@ -852,31 +1558,204 @@ nav > .nav-store > a.selected {
     <h2>About Me</h2>
 </div>
 <div class=" page" data-nav="top-bar" id="work">
-    <h2>Work</h2>
+    <div class="work-inner">
+        <header class="work-header">
+            <h2>Work</h2>
+            <p class="work-sub">Pull a folder from the drawer.</p>
+        </header>
+
+        <div class="file-drawer" id="file-drawer">
+            <div class="drawer-lip"></div>
+            <!-- folders injected by the script below -->
+        </div>
+    </div>
+
+    <!-- opened-folder reader -->
+    <div class="folder-reader" id="folder-reader" aria-hidden="true">
+        <div class="reader-backdrop" id="reader-backdrop"></div>
+        <div class="open-folder" id="open-folder">
+            <div class="open-folder-back"></div>
+            <div class="open-folder-tab" id="reader-tab"></div>
+            <div class="paper" id="reader-paper">
+                <button class="reader-close" id="reader-close" aria-label="Close">&times;</button>
+                <div class="paper-accent" id="reader-accent"></div>
+                <h3 id="reader-title"></h3>
+                <div class="doc-body" id="reader-body"></div>
+            </div>
+            <div class="open-folder-front"></div>
+        </div>
+    </div>
+
+    <script>
+    (function () {
+        // ── Work sections ───────────────────────────────────────────────
+        // Each entry becomes one manila folder in the drawer. Edit the
+        // `entries` lists to fill in the real thing — `role`/`org`/`dates`
+        // are all optional, `desc` too. `accent` tints the tab edge and
+        // the paper's accent strip when the folder is opened.
+        var SECTIONS = [
+            {
+                label: 'Experience',
+                accent: '#C6543E',
+                entries: [
+                    { role: 'Job title', org: 'Organisation', dates: '2023 — Now',
+                      desc: 'Placeholder — what you did, what you built, what changed because you were there. Replace with the real thing.' },
+                    { role: 'Earlier role', org: 'Previous organisation', dates: '2021 — 2023',
+                      desc: 'Placeholder — a line or two on the work and the impact.' }
+                ]
+            },
+            {
+                label: 'Education &\nCertifications',
+                accent: '#3E7A6B',
+                entries: [
+                    { role: 'Degree / Programme', org: 'Institution', dates: '2018 — 2021',
+                      desc: 'Placeholder — field of study, focus, anything worth a mention.' },
+                    { role: 'Certification', org: 'Awarding body', dates: '2022',
+                      desc: 'Placeholder — what it certifies.' }
+                ]
+            },
+            {
+                label: 'Publications',
+                accent: '#4A6FA5',
+                entries: [
+                    { role: 'Paper title', org: 'Journal / Venue', dates: '2024',
+                      desc: 'Placeholder — authors, one-line summary, and a link once it is live.' }
+                ]
+            },
+            {
+                label: 'Projects &\nResearch',
+                accent: '#B08328',
+                entries: [
+                    { role: 'Project name', org: 'Context', dates: '2023',
+                      desc: 'Placeholder — what it is and why it mattered.' }
+                ]
+            },
+            {
+                label: 'Talks &\nAwards',
+                accent: '#8A5A9C',
+                entries: [
+                    { role: 'Talk or award', org: 'Event / Body', dates: '2024',
+                      desc: 'Placeholder — a sentence of context.' }
+                ]
+            }
+        ];
+
+        var drawer = document.getElementById('file-drawer');
+        var reader = document.getElementById('folder-reader');
+        var openFolder = document.getElementById('open-folder');
+        var readerTab = document.getElementById('reader-tab');
+        var readerTitle = document.getElementById('reader-title');
+        var readerBody = document.getElementById('reader-body');
+        var readerAccent = document.getElementById('reader-accent');
+
+        // three staggered tab cuts (left / centre / right), like a real drawer
+        var TAB_POS = ['tab-l', 'tab-c', 'tab-r'];
+
+        // the stack maths in work.css need the folder count
+        drawer.style.setProperty('--n', SECTIONS.length);
+
+        function esc(s) {
+            return String(s).replace(/[&<>"]/g, function (c) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+            });
+        }
+
+        function labelHtml(label) {
+            return esc(label).replace(/\n/g, '<br>');
+        }
+
+        SECTIONS.forEach(function (section, i) {
+            var folder = document.createElement('button');
+            folder.className = 'folder ' + TAB_POS[i % TAB_POS.length];
+            folder.style.setProperty('--accent', section.accent);
+            folder.style.setProperty('--i', i);
+            // first section is the front folder; each one after files behind it
+            folder.style.zIndex = SECTIONS.length - i;
+            folder.innerHTML =
+                '<span class="folder-papers"><i></i><i></i><i></i></span>' +
+                '<span class="folder-body"></span>' +
+                '<span class="folder-tab"><span class="tab-label">' + labelHtml(section.label) + '</span></span>';
+            folder.addEventListener('click', function () { openSection(section); });
+            drawer.appendChild(folder);
+        });
+
+        function entryHtml(e) {
+            var head = '';
+            if (e.role || e.dates) {
+                head = '<div class="doc-entry-head">' +
+                    '<span class="doc-role">' + esc(e.role || '') + '</span>' +
+                    (e.dates ? '<span class="doc-dates">' + esc(e.dates) + '</span>' : '') +
+                    '</div>';
+            }
+            var org = e.org ? '<div class="doc-org">' + esc(e.org) + '</div>' : '';
+            var desc = e.desc ? '<p class="doc-desc">' + esc(e.desc) + '</p>' : '';
+            return '<div class="doc-entry">' + head + org + desc + '</div>';
+        }
+
+        function openSection(section) {
+            readerTitle.innerHTML = labelHtml(section.label);
+            readerTab.innerHTML = labelHtml(section.label);
+            readerAccent.style.background = section.accent;
+            readerTab.style.setProperty('--accent', section.accent);
+            openFolder.style.setProperty('--accent', section.accent);
+            readerBody.innerHTML = section.entries.length
+                ? section.entries.map(entryHtml).join('')
+                : '<p class="doc-desc">Nothing filed here yet.</p>';
+            reader.classList.add('open');
+            reader.setAttribute('aria-hidden', 'false');
+            document.body.classList.add('reader-open');
+        }
+
+        function closeReader() {
+            reader.classList.remove('open');
+            reader.setAttribute('aria-hidden', 'true');
+            document.body.classList.remove('reader-open');
+        }
+
+        document.getElementById('reader-close').addEventListener('click', closeReader);
+        document.getElementById('reader-backdrop').addEventListener('click', closeReader);
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && reader.classList.contains('open')) closeReader();
+        });
+    })();
+    </script>
 </div>
 <div class=" hidden  page" data-nav="top-bar" id="music">
+    <div class="music-countdown">
+        <span class="countdown-label">Time to flight</span>
+        <span class="countdown-timer" id="countdown-timer">--:--:--:--</span>
+    </div>
+
+    <section class="video-section">
+        <a class="video-card" href="https://www.youtube.com/@MrBeast" target="_blank" rel="noopener">
+            <div class="video-thumb">
+                <span class="video-play" aria-hidden="true"></span>
+            </div>
+        </a>
+    </section>
+
     <div class="album-section flipped">
         <div class="album-blurb">
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
             <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
         </div>
         <div class="tracklist">
-            <h2>Breaking Waves</h2>
+            <h2>???</h2>
             <ul class="tracks">
-                <li><span class="t-num">#</span><span class="t-name">Ripples</span><span class="t-num">#</span></li>
-                <li><span class="t-num">1</span><span class="t-name">Bluebird</span></li>
-                <li><span class="t-num">2</span><span class="t-name">Shadow People</span></li>
-                <li><span class="t-num">3</span><span class="t-name">Kids</span></li>
-                <li><span class="t-num">4</span><span class="t-name">Remind Me</span></li>
-                <li><span class="t-num">5</span><span class="t-name">Paranoid</span></li>
-                <li><span class="t-num">#</span><span class="t-name">Ripples</span><span class="t-num">#</span></li>
+                <li><span class="t-num">#</span><span class="t-name">?</span><span class="t-num">#</span></li>
+                <li><span class="t-num">1</span><span class="t-name">?</span></li>
+                <li><span class="t-num">2</span><span class="t-name">?</span></li>
+                <li><span class="t-num">3</span><span class="t-name">?</span></li>
+                <li><span class="t-num">4</span><span class="t-name">?</span></li>
+                <li><span class="t-num">5</span><span class="t-name">?</span></li>
+                <li><span class="t-num">#</span><span class="t-name">?</span><span class="t-num">#</span></li>
             </ul>
         </div>
-        <div class="album-art">?</div>
+        <div class="album-art"></div>
     </div>
 
     <div class="album-section">
-        <div class="album-art"><img src="assets/albums/wave-cover.webp" alt="Album cover"></div>
+        <div class="album-art"></div>
         <div class="tracklist">
             <h2>Lorem Ipsum</h2>
             <ul class="tracks">
@@ -944,7 +1823,21 @@ nav > .nav-store > a.selected {
         var titleEl = document.getElementById('quest-panel-title');
         var photosEl = document.getElementById('quest-photos');
         var textEl = document.getElementById('quest-panel-text');
-        var ASPECT = 1000 / 535;   // world-map.svg viewBox ratio
+
+        // ── Cursors: normal pointer over land, sailboat over water ──────
+        // The boat matches the banner's thin white line-work.
+        function cursor(svg, hx, hy, fallback) {
+            return 'url("data:image/svg+xml,' + encodeURIComponent(
+                '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">' + svg + '</svg>'
+            ) + '") ' + hx + ' ' + hy + ', ' + fallback;
+        }
+        var boatCur = cursor('<path d="M6 21 L26 21 L22.5 26 L9.5 26 Z"/><path d="M16.5 21 L16.5 7"/><path d="M16.5 7 L25 19.5 L16.5 19.5 Z"/><path d="M15 9.5 L8 19.5 L15 19.5 Z"/><path d="M3 29 Q7 27.5 11 29 T19 29 T27 29"/>', 16, 16, 'grab');
+        var curStyle = document.createElement('style');
+        curStyle.textContent =
+            '#map-viewport{cursor:' + boatCur + '}' +
+            '#map-strip .country{cursor:default}' +
+            '#map-strip .country.quest{cursor:pointer}';
+        document.head.appendChild(curStyle);
 
         // ── Side panel (slides in from the left) ────────────────────────
         function openPanel(name) {
@@ -979,11 +1872,13 @@ nav > .nav-store > a.selected {
             if (e.key === 'Escape') closePanel();
         });
 
-        // ── Fill the viewport below the nav exactly ─────────────────────
+        // ── Fill the space between the nav and the signup banner ────────
         function sizePage() {
             var nav = document.querySelector('main > nav');
             var navH = (nav && nav.offsetHeight) || 0;
-            page.style.setProperty('--sq-h', (window.innerHeight - navH) + 'px');
+            var ban = document.getElementById('signup-banner');
+            var banH = (ban && ban.offsetHeight) || 0;
+            page.style.setProperty('--sq-h', (window.innerHeight - navH - banH) + 'px');
         }
 
         // ── Endless horizontal pan (wraps) + clamped vertical pan ───────
@@ -995,7 +1890,6 @@ nav > .nav-store > a.selected {
         var dragging = false;
         var moved = 0;             // distance since pointerdown (click guard)
         var lastX = 0, lastY = 0;
-        var placedY = false;
 
         function clampY() {
             var vh = viewport.clientHeight;
@@ -1011,24 +1905,17 @@ nav > .nav-store > a.selected {
             var vh = viewport.clientHeight;
             var vw = viewport.clientWidth;
             if (!vh || !vw) return;
-            var w = vw;                       // world spans the full width
-            var h = w / ASPECT;
-            if (h < vh) {                     // very tall window: cover by height
-                h = vh;
-                w = h * ASPECT;
-            }
-            mapW = w;
-            mapH = h;
-            strip.style.height = h + 'px';
+            // Width spans the full viewport (for the endless loop); height is
+            // stretched to fit exactly, so the whole map is always visible —
+            // nothing hides under the banner and no vertical panning needed.
+            mapW = vw;
+            mapH = vh;
+            strip.style.height = vh + 'px';
             strip.style.top = '0px';
             strip.querySelectorAll('svg').forEach(function (s) {
-                s.style.width = w + 'px';
-                s.style.height = h + 'px';
+                s.style.width = vw + 'px';
+                s.style.height = vh + 'px';
             });
-            if (!placedY && mapH > 0) {
-                placedY = true;
-                offsetY = (mapH - vh) / 2;    // start looking at the middle
-            }
             clampY();
         }
 
@@ -1059,7 +1946,6 @@ nav > .nav-store > a.selected {
             vel = 0;
             lastX = e.clientX;
             lastY = e.clientY;
-            viewport.classList.add('grabbing');
         });
         window.addEventListener('pointermove', function (e) {
             if (!dragging) return;
@@ -1075,7 +1961,6 @@ nav > .nav-store > a.selected {
         });
         function endDrag() {
             dragging = false;
-            viewport.classList.remove('grabbing');
         }
         window.addEventListener('pointerup', endDrag);
         window.addEventListener('pointercancel', endDrag);
@@ -1119,6 +2004,9 @@ nav > .nav-store > a.selected {
                 .then(function (r) { return r.text(); })
                 .then(function (svg) {
                     strip.innerHTML = svg + svg + svg;   // three copies = seamless loop
+                    strip.querySelectorAll('svg').forEach(function (s) {
+                        s.setAttribute('preserveAspectRatio', 'none');   // allow y-stretch
+                    });
                     var SVGNS = 'http://www.w3.org/2000/svg';
                     var firstSvg = strip.querySelector('svg');
                     var defs = document.createElementNS(SVGNS, 'defs');
@@ -1166,33 +2054,153 @@ nav > .nav-store > a.selected {
         sizePage();
         ensureMap();
         tick();
+        // the banner sits after this script in the DOM — re-measure once
+        // the whole document has parsed so its height is counted
+        setTimeout(layout, 0);
+        window.addEventListener('load', layout);
     })();
     </script>
 </div>
 <div class=" hidden  page" data-nav="top-bar" id="store">
-    <h2>Merchandise</h2>
-    <div class="store-items">
-        
-            <a class="store-item" href="https://shopify.com">
-                <img src="assets/store/White-T.png" alt="T-Shirt">
-                <div class="item-name">T-Shirt</div>
+    <div class="store-view" id="store-grid">
+        <h2>Store</h2>
+        <p class="store-sub">Wear the record. Carry the tour.</p>
+        <div class="store-items">
+            
+            <button class="store-item" type="button" data-product="white-tee">
+                <div class="store-item-img"><img src="assets/store/White-T.png" alt="White T-Shirt"></div>
+                <div class="item-name">White T-Shirt</div>
                 <div class="item-price">£24.99</div>
-            </a>
+            </button>
         
-            <a class="store-item" href="https://shopify.com">
-                <img src="assets/store/Tote.png" alt="Tote bag">
-                <div class="item-name">Tote bag</div>
+            <button class="store-item" type="button" data-product="tote">
+                <div class="store-item-img"><img src="assets/store/Tote.png" alt="Tote Bag"></div>
+                <div class="item-name">Tote Bag</div>
                 <div class="item-price">£14.99</div>
-            </a>
+            </button>
         
-            <a class="store-item" href="https://shopify.com">
-                <img src="assets/store/Mug.png" alt="White Mug">
+            <button class="store-item" type="button" data-product="mug">
+                <div class="store-item-img"><img src="assets/store/Mug.png" alt="White Mug"></div>
                 <div class="item-name">White Mug</div>
                 <div class="item-price">£12.49</div>
-            </a>
+            </button>
         
+        </div>
     </div>
-</div><div class=" hidden   page" data-nav="none" id="sign-up">
+
+    
+            <div class="store-product" id="product-white-tee" hidden>
+                <button class="store-back" type="button">&larr; Back to store</button>
+                <div class="product-layout">
+                    <div class="product-gallery">
+                        <div class="product-main"><img src="assets/store/White-T.png" alt="White T-Shirt"></div>
+                        <div class="product-thumbs"><button type="button" class="product-thumb active" data-src="assets/store/White-T.png"><img src="assets/store/White-T.png" alt=""></button><button type="button" class="product-thumb" data-src="assets/store/placeholder.png"><img src="assets/store/placeholder.png" alt=""></button><button type="button" class="product-thumb" data-src="assets/store/placeholder.png"><img src="assets/store/placeholder.png" alt=""></button></div>
+                    </div>
+                    <div class="product-info">
+                        <h2>White T-Shirt</h2>
+                        <div class="product-price">£24.99</div>
+                        <p class="product-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+                        <ul class="product-details"><li>100% organic cotton</li><li>Screen-printed artwork</li><li>Unisex fit — S to XXL</li></ul>
+                        <a class="product-buy" href="https://shopify.com" target="_blank" rel="noopener">Add to cart</a>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="store-product" id="product-tote" hidden>
+                <button class="store-back" type="button">&larr; Back to store</button>
+                <div class="product-layout">
+                    <div class="product-gallery">
+                        <div class="product-main"><img src="assets/store/Tote.png" alt="Tote Bag"></div>
+                        <div class="product-thumbs"><button type="button" class="product-thumb active" data-src="assets/store/Tote.png"><img src="assets/store/Tote.png" alt=""></button><button type="button" class="product-thumb" data-src="assets/store/placeholder.png"><img src="assets/store/placeholder.png" alt=""></button><button type="button" class="product-thumb" data-src="assets/store/placeholder.png"><img src="assets/store/placeholder.png" alt=""></button></div>
+                    </div>
+                    <div class="product-info">
+                        <h2>Tote Bag</h2>
+                        <div class="product-price">£14.99</div>
+                        <p class="product-desc">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.</p>
+                        <ul class="product-details"><li>Heavyweight natural canvas</li><li>Long shoulder straps</li><li>38 × 42 cm</li></ul>
+                        <a class="product-buy" href="https://shopify.com" target="_blank" rel="noopener">Add to cart</a>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="store-product" id="product-mug" hidden>
+                <button class="store-back" type="button">&larr; Back to store</button>
+                <div class="product-layout">
+                    <div class="product-gallery">
+                        <div class="product-main"><img src="assets/store/Mug.png" alt="White Mug"></div>
+                        <div class="product-thumbs"><button type="button" class="product-thumb active" data-src="assets/store/Mug.png"><img src="assets/store/Mug.png" alt=""></button><button type="button" class="product-thumb" data-src="assets/store/placeholder.png"><img src="assets/store/placeholder.png" alt=""></button><button type="button" class="product-thumb" data-src="assets/store/placeholder.png"><img src="assets/store/placeholder.png" alt=""></button></div>
+                    </div>
+                    <div class="product-info">
+                        <h2>White Mug</h2>
+                        <div class="product-price">£12.49</div>
+                        <p class="product-desc">At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.</p>
+                        <ul class="product-details"><li>Ceramic, 11oz</li><li>Dishwasher & microwave safe</li><li>Wraparound print</li></ul>
+                        <a class="product-buy" href="https://shopify.com" target="_blank" rel="noopener">Add to cart</a>
+                    </div>
+                </div>
+            </div>
+        
+
+    <script>
+    (function () {
+        var store = document.getElementById('store');
+        var grid = document.getElementById('store-grid');
+
+        function show(el) { el.hidden = false; }
+        function hide(el) { el.hidden = true; }
+
+        function openProduct(id) {
+            var panel = document.getElementById('product-' + id);
+            if (!panel) return;
+            hide(grid);
+            var panels = store.querySelectorAll('.store-product');
+            for (var i = 0; i < panels.length; i++) hide(panels[i]);
+            show(panel);
+            window.scrollTo(0, 0);
+        }
+
+        function backToGrid() {
+            var panels = store.querySelectorAll('.store-product');
+            for (var i = 0; i < panels.length; i++) hide(panels[i]);
+            show(grid);
+            window.scrollTo(0, 0);
+        }
+
+        // Open a product from its grid card
+        var cards = store.querySelectorAll('.store-item');
+        for (var i = 0; i < cards.length; i++) {
+            cards[i].addEventListener('click', function () {
+                openProduct(this.getAttribute('data-product'));
+            });
+        }
+
+        // Back buttons
+        var backs = store.querySelectorAll('.store-back');
+        for (var b = 0; b < backs.length; b++) {
+            backs[b].addEventListener('click', backToGrid);
+        }
+
+        // Gallery thumbnails swap the main image
+        var thumbs = store.querySelectorAll('.product-thumb');
+        for (var t = 0; t < thumbs.length; t++) {
+            thumbs[t].addEventListener('click', function () {
+                var panel = this.closest('.store-product');
+                var main = panel.querySelector('.product-main img');
+                main.src = this.getAttribute('data-src');
+                var sibs = panel.querySelectorAll('.product-thumb');
+                for (var s = 0; s < sibs.length; s++) sibs[s].classList.remove('active');
+                this.classList.add('active');
+            });
+        }
+
+        // Reset to the grid whenever the store page is (re)shown
+        new MutationObserver(function () {
+            if (!store.classList.contains('hidden')) backToGrid();
+        }).observe(store, { attributes: true, attributeFilter: ['class'] });
+    })();
+    </script>
+</div>
+<div class=" hidden   page" data-nav="none" id="sign-up">
     <div>
         <h2>Newsletter Sign Up</h2>
         <div>Sign up for exclusive information from Jamie Setch</div>
@@ -1209,10 +2217,10 @@ nav > .nav-store > a.selected {
     <div class="side-nav-close" onclick="site.toggleSideNav()"></div>
     <div class="side-nav">
         <a href="/home" data-navid="home" class="nav-link">Home</a>
-        <a href="/about-me" data-navid="about-me" class="nav-link">About</a>
-        <a href="/work" data-navid="work" class="nav-link">Work</a>
-        <a href="/music" data-navid="music" class="nav-link">Music</a>
-        <a href="/side-quests" data-navid="side-quests" class="nav-link">Side Quests</a>
+        <a href="/about-me" data-navid="about-me" class="nav-link hidden">About</a>
+        <a href="/work" data-navid="work" class="nav-link hidden">Work</a>
+        <a href="/music" data-navid="music" class="nav-link">Starlings</a>
+        <a href="/side-quests" data-navid="side-quests" class="nav-link">Travel</a>
         <a href="/store" data-navid="store" class="nav-link">Store</a>
         <div class="side-nav-socials">
             
@@ -1261,7 +2269,7 @@ nav > .nav-store > a.selected {
                 </svg>
             </a>
         
-            <a href="https://www.instagram.com/jamiesetch">
+            <a href="https://www.instagram.com/jamie_setch/">
 
                 <svg width="200" height="200">
                     <defs>
@@ -1308,6 +2316,7 @@ nav > .nav-store > a.selected {
 
     <div class="signup-banner" id="signup-banner" onclick="site.navigateTo('sign-up')">
         <canvas id="murmuration" class="murmuration"></canvas>
+        <canvas id="adventure" class="adventure"></canvas>
         <span class="signup-banner-text" id="signup-banner-text">Become a Starling</span>
     </div>
 
@@ -1413,18 +2422,21 @@ nav > .nav-store > a.selected {
         // so we watch the page divs directly — robust to any navigation path.
         var banner = document.getElementById('signup-banner');
         var bannerText = document.getElementById('signup-banner-text');
+        var advCanvas = document.getElementById('adventure');
         var BANNER_PAGES = {
-            'music': 'Become a Starling',
-            'side-quests': 'Join an Adventure'
+            'music': { text: 'Become a Starling', canvas: 'murmuration' },
+            'side-quests': { text: 'Join an Adventure', canvas: 'adventure' }
         };
         function visiblePageId() {
             var el = document.querySelector('.page:not(.hidden)');
             return el ? el.id : '';
         }
         function updateBanner() {
-            var text = BANNER_PAGES[visiblePageId()];
-            if (text) {
-                bannerText.textContent = text;
+            var cfg = BANNER_PAGES[visiblePageId()];
+            if (cfg) {
+                bannerText.textContent = cfg.text;
+                canvas.style.display = (cfg.canvas === 'murmuration') ? '' : 'none';
+                advCanvas.style.display = (cfg.canvas === 'adventure') ? '' : 'none';
                 banner.style.transform = 'translateY(0)';
             } else {
                 banner.style.transform = 'translateY(100%)';
@@ -1436,6 +2448,211 @@ nav > .nav-store > a.selected {
         });
         updateBanner();
         window.addEventListener('popstate', updateBanner);
+
+        // ── Countdown to flight (1 January 2027) ───────────────────────
+        var TARGET = Date.UTC(2027, 0, 1, 0, 0, 0);   // months are 0-indexed
+        var timerEl = document.getElementById('countdown-timer');
+        function pad(n) { return (n < 10 ? '0' : '') + n; }
+        function tickCountdown() {
+            if (!timerEl) return;
+            var diff = Math.floor((TARGET - Date.now()) / 1000);
+            if (diff < 0) diff = 0;
+            var days = Math.floor(diff / 86400); diff -= days * 86400;
+            var hrs = Math.floor(diff / 3600); diff -= hrs * 3600;
+            var mins = Math.floor(diff / 60);
+            var secs = diff - mins * 60;
+            timerEl.textContent = pad(days) + ':' + pad(hrs) + ':' + pad(mins) + ':' + pad(secs);
+        }
+        tickCountdown();
+        setInterval(tickCountdown, 1000);
+    })();
+    </script>
+
+    <script>
+    (function () {
+        // ── Corner scuba scene: a stick diver and some fish ────────────
+        // Lives in the right corner of the "Join an Adventure" banner.
+        // Everything is a pure function of time — window.__advSeek(sec)
+        // freezes a frame for QA, window.__advSeek(null) resumes.
+        var canvas = document.getElementById('adventure');
+        var ctx = canvas.getContext('2d');
+        var dpr = window.devicePixelRatio || 1;
+        var W = 0, H = 0;
+        var PI = Math.PI, TAU = PI * 2;
+
+        function resize() {
+            W = canvas.clientWidth;
+            H = canvas.clientHeight;
+            canvas.width = W * dpr;
+            canvas.height = H * dpr;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+
+        function L(a, b) { ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); }
+        // point from (x,y) at angle a (0 = up, PI/2 = right), length len
+        function P(x, y, a, len) { return [x + Math.sin(a) * len, y - Math.cos(a) * len]; }
+
+        // ── The diver (faces left, drifts on a lazy ellipse) ────────────
+        function diver(dx, dy, t) {
+            ctx.save();
+            ctx.translate(dx, dy);
+            ctx.rotate(0.07 * Math.sin(t * 0.5));
+            // torso
+            L([0, 0], [-9, -1.8]);
+            // head + mask
+            ctx.beginPath();
+            ctx.arc(-12.3, -2.6, 2.4, 0, TAU);
+            ctx.fill();
+            L([-14.8, -3.6], [-15.1, -1.7]);
+            // tank on the back (drawn heavier)
+            ctx.lineWidth = 2.4;
+            L([-7.5, -4.8], [-2.5, -4.2]);
+            ctx.lineWidth = 1.3;
+            // regulator hose
+            ctx.beginPath();
+            ctx.moveTo(-7.5, -4.6);
+            ctx.quadraticCurveTo(-13, -6, -13.6, -3.6);
+            ctx.stroke();
+            // arms: one reaching ahead, one trailing
+            L([-9, -1.8], [-12.5, 1.3]);
+            L([-12.5, 1.3], [-16, 2.1]);
+            L([-9, -1.8], [-6.8, 2.4]);
+            L([-6.8, 2.4], [-8.8, 4.6]);
+            // legs + fins, flutter kick
+            var c = t * 3.4;
+            var phs = [0, PI * 0.9];
+            for (var i = 0; i < 2; i++) {
+                var th = PI / 2 + 0.22 * Math.sin(c + phs[i]);
+                var kn = P(0, 0, th, 6.5);
+                var sh = th + 0.28 * Math.sin(c + phs[i] + 0.9);
+                var an = P(kn[0], kn[1], sh, 5.5);
+                L([0, 0], kn);
+                L(kn, an);
+                L(an, P(an[0], an[1], sh + 0.15, 4.2));   // fin
+            }
+            ctx.restore();
+            // bubble train rising from the regulator
+            for (var j = 0; j < 4; j++) {
+                var b = (t * 0.55 + j * 0.27) % 1;
+                ctx.save();
+                ctx.globalAlpha = (1 - b) * 0.5;
+                ctx.beginPath();
+                ctx.arc(dx - 13 + Math.sin(b * 9 + j * 2) * 2.5, dy - 6 - b * (dy - 4), 0.8 + b * 1.8, 0, TAU);
+                ctx.stroke();
+                ctx.restore();
+            }
+        }
+
+        // ── Fish: lens body, waggling tail, dorsal tick ─────────────────
+        function fish(cx, cy, s, dir, t, ph) {
+            ctx.save();
+            ctx.translate(cx, cy);
+            ctx.scale(dir * s, s);
+            var tw = Math.sin(t * 5 + ph) * 0.9;
+            ctx.beginPath();
+            ctx.moveTo(4, 0);
+            ctx.quadraticCurveTo(0, -2.6, -4, 0);
+            ctx.quadraticCurveTo(0, 2.6, 4, 0);
+            ctx.stroke();
+            L([-4, 0], [-6.5, -1.8 + tw]);
+            L([-4, 0], [-6.5, 1.8 + tw]);
+            L([-0.5, -2.2], [1, -3.2]);
+            ctx.restore();
+        }
+
+        function seaweed(bx, floorY, h, ph, t) {
+            ctx.beginPath();
+            ctx.moveTo(bx, floorY);
+            for (var j = 1; j <= 4; j++) {
+                ctx.lineTo(bx + Math.sin(t * 0.9 + ph + j * 0.7) * (j * 0.9), floorY - j * (h / 4));
+            }
+            ctx.stroke();
+        }
+
+        var start = null, seekT = null;
+        window.__advSeek = function (v) { seekT = (typeof v === 'number') ? v : null; };
+
+        function tick(now) {
+            requestAnimationFrame(tick);
+            if (canvas.clientWidth === 0) return;   // hidden (other page)
+            if (canvas.clientWidth !== W || canvas.clientHeight !== H) resize();
+            if (start === null) start = now;
+            var t = (seekT !== null) ? seekT : (now - start) / 1000;
+
+            ctx.clearRect(0, 0, W, H);
+            ctx.strokeStyle = '#ffffff';
+            ctx.fillStyle = '#ffffff';
+            ctx.lineWidth = 1.3;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            var floorY = H - 6;
+
+            // surface shimmer, broken strokes along the whole bar
+            ctx.save();
+            ctx.globalAlpha = 0.1;
+            var nsh = Math.ceil(W / 170);
+            for (var sh = 0; sh < nsh; sh++) {
+                ctx.beginPath();
+                for (var x = 0; x <= 56; x += 4) {
+                    var wx = 20 + sh * 170 + x;
+                    var wy = 6 + Math.sin(x * 0.3 + t * 1.6 + sh * 2) * 1.2;
+                    if (x === 0) ctx.moveTo(wx, wy); else ctx.lineTo(wx, wy);
+                }
+                ctx.stroke();
+            }
+            // sea floor + scattered pebbles
+            ctx.globalAlpha = 0.12;
+            L([2, floorY + 2], [W - 2, floorY + 2]);
+            ctx.globalAlpha = 0.18;
+            for (var pb = 0; pb < 7; pb++) {
+                var pf = Math.sin(pb * 91.7) * 43758.5453;
+                pf = pf - Math.floor(pf);
+                ctx.beginPath();
+                ctx.arc(20 + pf * (W - 40), floorY + 1.6, 1 + (pb % 3) * 0.35, PI, 0);
+                ctx.stroke();
+            }
+            // seaweed clumps across the bar
+            ctx.globalAlpha = 0.25;
+            var weeds = [
+                [0.03, 14], [0.055, 20], [0.075, 11],
+                [0.31, 12], [0.335, 17],
+                [0.62, 10], [0.645, 15],
+                [0.925, 12], [0.95, 20], [0.97, 15]
+            ];
+            for (var wd = 0; wd < weeds.length; wd++) {
+                seaweed(W * weeds[wd][0], floorY + 2, weeds[wd][1], wd * 0.8, t);
+            }
+            ctx.restore();
+
+            // a small school heading left
+            ctx.save();
+            ctx.globalAlpha = 0.5;
+            for (var i = 0; i < 3; i++) {
+                var fx = W + 30 - ((t * 12 + i * 14) % (W + 70));
+                var fy = 16 + i * 7 + 2 * Math.sin(t * 1.8 + i * 1.3);
+                fish(fx, fy, 0.8, -1, t, i * 1.7);
+            }
+            // a pair cruising right at mid-depth
+            for (var j2 = 0; j2 < 2; j2++) {
+                var px = -25 + ((t * 10 + 160 + j2 * 18) % (W + 70));
+                fish(px, 30 + j2 * 6 + 2 * Math.sin(t * 1.6 + j2), 0.9, 1, t, j2 * 2.3 + 1);
+            }
+            // a bigger loner cruising right, deeper
+            ctx.globalAlpha = 0.6;
+            fish(-25 + ((t * 8.5 + 50) % (W + 70)), 46 + 2.5 * Math.sin(t * 1.4), 1.3, 1, t, 3.1);
+            // a tiny one pottering near the weeds
+            ctx.globalAlpha = 0.35;
+            fish(W + 30 - ((t * 6 + 90) % (W + 70)), 58 + 1.5 * Math.sin(t * 2.1), 0.6, -1, t, 5.2);
+            ctx.restore();
+
+            // the diver patrols the whole bar, right to left, and wraps
+            ctx.globalAlpha = 0.95;
+            diver(W + 40 - ((t * 10) % (W + 90)),
+                  32 + 6 * Math.sin(t * 0.33 + 1.2), t);
+            ctx.globalAlpha = 1;
+        }
+        requestAnimationFrame(tick);
     })();
     </script>
 </body>

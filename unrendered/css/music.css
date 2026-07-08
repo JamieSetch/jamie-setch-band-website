@@ -8,6 +8,113 @@
     color: var(--primary-grey);
 }
 
+/* ── Countdown bar (sits directly below the nav) ────────────── */
+.music-countdown {
+    margin: -3em -3em 0;          /* full-bleed: cancel #music padding */
+    height: 72px;
+    background-color: var(--primary-grey);
+    border-bottom: 1px solid var(--primary-clr-transparent);
+    color: var(--primary-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.2em;
+    flex-wrap: wrap;
+    text-align: center;
+    padding: 0 1em;
+    box-sizing: border-box;
+}
+
+.music-countdown .countdown-label {
+    text-transform: uppercase;
+    font-weight: 800;
+    font-size: 1.6em;
+    letter-spacing: 0.06em;
+    line-height: 1;
+}
+
+.music-countdown .countdown-timer {
+    font-weight: 800;
+    font-size: 1.6em;
+    letter-spacing: 0.12em;
+    line-height: 1;
+    color: var(--primary-white);
+    font-variant-numeric: tabular-nums;
+}
+
+/* ── Video section — fills the screen (so the albums below stay
+   hidden behind the bottom banner) and centres a 16:9 video box ── */
+.video-section {
+    height: calc(100vh - 216px);   /* viewport minus nav + countdown + bottom banner */
+    min-height: 300px;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2em 3em;
+    box-sizing: border-box;
+}
+
+.video-card {
+    display: block;
+    height: 100%;
+    max-width: 100%;
+    text-decoration: none;
+    color: inherit;
+}
+
+.video-thumb {
+    position: relative;
+    height: 100%;               /* keep the vertical size, derive width from 16:9 */
+    aspect-ratio: 16 / 9;
+    max-width: 100%;
+    margin: 0 auto;
+    background: linear-gradient(135deg, #2E2E2E, #1a1a1a);
+    display: grid;
+    place-content: center;
+    overflow: hidden;
+    transition: 0.3s filter;
+}
+
+.video-card:hover .video-thumb {
+    filter: brightness(1.15);
+}
+
+.video-play {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 22px 0 22px 38px;
+    border-color: transparent transparent transparent var(--primary-white);
+    filter: drop-shadow(0 0 12px rgba(0, 0, 0, 0.5));
+    transition: 0.3s transform;
+}
+
+.video-card:hover .video-play {
+    transform: scale(1.12);
+}
+
+.video-meta {
+    display: flex;
+    align-items: baseline;
+    gap: 1em;
+    margin-top: 0.9em;
+}
+
+.video-label {
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-size: 0.75em;
+    color: var(--primary-clr-dark, #b89a00);
+    font-weight: 700;
+}
+
+.video-title {
+    font-size: 1.1em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
 .album-section {
     display: flex;
     flex-direction: row;

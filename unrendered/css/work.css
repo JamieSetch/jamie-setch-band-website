@@ -1,0 +1,405 @@
+/* ── Work: one filing drawer, folders nested front-to-back ────────── */
+
+#work {
+    min-height: calc(100dvh - 4em);
+    box-sizing: border-box;
+    background:
+        radial-gradient(120% 80% at 50% -10%, #3a3a3a 0%, var(--primary-grey) 45%, #232323 100%);
+    color: white;
+    padding: 2.4em 1.5em 4em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: clip;   /* folder edges never spawn a scrollbar */
+}
+
+.work-inner {
+    width: min(1100px, 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.work-header {
+    text-align: center;
+    margin-bottom: 0.6em;
+}
+
+.work-header h2 {
+    margin: 0;
+    font-size: 2.2em;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+}
+
+.work-sub {
+    margin: 0.2em 0 0;
+    font-size: 0.62em;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* ── The drawer: one open drawer, sections filed behind each other ──
+   --n is set by the page script to the number of folders.            */
+.file-drawer {
+    position: relative;
+    width: min(36em, 94vw);
+    /* folder height + one sliver per folder behind + lip + hover headroom */
+    height: calc(15.4em + (var(--n, 5) - 1) * 2.7em + 1.7em);
+    margin-top: 0.6em;
+}
+
+/* the drawer cavity — dark box the folders sit inside */
+.file-drawer::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 4.2em;
+    border-radius: 12px 12px 10px 10px;
+    background: linear-gradient(#161616, #262626 30%, #1e1e1e);
+    box-shadow:
+        inset 0 16px 20px rgba(0, 0, 0, 0.55),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.05),
+        0 18px 34px rgba(0, 0, 0, 0.5);
+    z-index: 0;
+}
+
+/* the front wall / lip of the drawer, in front of the folder bottoms */
+.drawer-lip {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3.4em;
+    border-radius: 0 0 10px 10px;
+    background:
+        linear-gradient(#4a4a4a, #2b2b2b 60%, #1c1c1c);
+    box-shadow:
+        inset 0 2px 0 rgba(255, 255, 255, 0.08),
+        inset 0 -10px 22px rgba(0, 0, 0, 0.5),
+        0 14px 30px rgba(0, 0, 0, 0.5);
+    z-index: 40;
+    pointer-events: none;
+}
+.drawer-lip::before {   /* metal pull handle */
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 1.2em;
+    transform: translateX(-50%);
+    width: 5.5em;
+    height: 0.7em;
+    border-radius: 0.7em;
+    background: linear-gradient(#8f8f8f, #d8d8d8 40%, #6f6f6f);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+/* ── A single manila folder in the stack ─────────────────────────────
+   --i (set by the script) is the folder's position: 0 = front.
+   Each folder behind sits 2.7em higher, a shade darker, a whisker
+   narrower — a drawer full of files seen from the front.             */
+.folder {
+    --manila-top: #ecd196;
+    --manila-mid: #e2be74;
+    --manila-bot: #d3ac60;
+    position: absolute;
+    left: 50%;
+    bottom: 2.2em;
+    width: min(31em, 86vw);
+    /* the button is just the manila body — tab and papers overflow above
+       it, so the hit area matches the visible silhouette and never sits
+       over the folder filed behind */
+    height: 9.6em;
+    display: block;
+    cursor: pointer;
+    transform-origin: 50% 100%;
+    transform:
+        translateX(calc(-50% + var(--jx, 0em)))
+        translateY(calc(var(--i, 0) * -2.7em - var(--lift, 0em)))
+        scale(calc(1 - var(--i, 0) * 0.018));
+    transition: transform 0.32s cubic-bezier(.22,.9,.28,1), filter 0.3s;
+    filter:
+        brightness(calc(1 - var(--i, 0) * 0.05))
+        drop-shadow(0 -0.5em 0.65em rgba(0, 0, 0, 0.4));
+    -webkit-tap-highlight-color: transparent;
+}
+/* the files aren't machine-aligned — a nudge either way */
+.folder:nth-child(even) { --jx: 0.3em; }
+.folder:nth-child(odd)  { --jx: -0.2em; }
+
+.folder:hover,
+.folder:focus-visible {
+    --lift: 1.7em;
+    filter:
+        brightness(1.02)
+        drop-shadow(0 -0.7em 0.9em rgba(0, 0, 0, 0.55));
+}
+
+/* white papers peeking out of the top — just a sliver, so the manila
+   edge of every folder stays the star of each row */
+.folder-papers {
+    position: absolute;
+    left: 0.8em;
+    right: 0.8em;
+    top: -0.4em;
+    bottom: 0.4em;
+}
+.folder-papers i {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 100%;
+    border-radius: 3px 3px 2px 2px;
+    background: linear-gradient(#ffffff, #f3efe6);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+.folder-papers i:nth-child(1) { transform: translate(-0.5em, -0.22em); background: linear-gradient(#fbf7ee, #efe9dc); }
+.folder-papers i:nth-child(2) { transform: translate(0.35em, -0.12em); background: linear-gradient(#fffdf8, #f1ece1); }
+.folder-papers i:nth-child(3) { transform: translate(-0.05em, -0.05em); }
+
+/* the front folder gets the stuffed-full look
+   (first-of-type: the drawer-lip div is the container's first child) */
+.folder:first-of-type .folder-papers { top: -1em; }
+.folder:first-of-type .folder-papers i:nth-child(1) { transform: translate(-0.5em, -0.5em) rotate(-0.7deg); }
+.folder:first-of-type .folder-papers i:nth-child(2) { transform: translate(0.35em, -0.26em) rotate(0.5deg); }
+
+/* the manila front panel */
+.folder-body {
+    position: absolute;
+    inset: 0;
+    border-radius: 5px 5px 7px 7px;
+    background:
+        linear-gradient(160deg, rgba(255,255,255,0.28), rgba(255,255,255,0) 30%),
+        repeating-linear-gradient(92deg, rgba(140,100,40,0.05) 0 2px, rgba(140,100,40,0) 2px 5px),
+        linear-gradient(var(--manila-top), var(--manila-mid) 52%, var(--manila-bot));
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.45),
+        inset 0 -1.4em 1.6em rgba(150, 108, 46, 0.28),
+        inset 0 0 0 1px rgba(120, 86, 34, 0.35);
+}
+/* the fold crease across the bottom of the pocket */
+.folder-body::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: 0.9em;
+    height: 1px;
+    background: rgba(120, 86, 34, 0.4);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+/* the labelled tab — rises out of the folder top */
+.folder-tab {
+    position: absolute;
+    top: -1.9em;
+    width: 8em;
+    height: 2.4em;
+    box-sizing: border-box;
+    padding: 0 0.5em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    /* trapezoid with angled shoulders */
+    clip-path: polygon(7% 0, 93% 0, 100% 100%, 0 100%);
+    background:
+        linear-gradient(rgba(255,255,255,0.32), rgba(255,255,255,0) 40%),
+        linear-gradient(var(--manila-top), var(--manila-mid));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    border-top: 3px solid var(--accent, #c6543e);
+    border-radius: 5px 5px 0 0;
+}
+/* staggered tab cuts, like a real set of dividers */
+.folder.tab-l .folder-tab { left: 1em; }
+.folder.tab-c .folder-tab { left: 50%; transform: translateX(-50%); }
+.folder.tab-r .folder-tab { right: 1em; }
+
+.tab-label {
+    font-size: 0.42em;
+    line-height: 1.15;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #5c421c;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+/* ── The opened-folder reader ────────────────────────────────────── */
+body.reader-open { overflow: hidden; }
+
+.folder-reader {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.2em;
+    box-sizing: border-box;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.28s;
+}
+.folder-reader.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.reader-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 10, 10, 0.72);
+    backdrop-filter: blur(2px);
+}
+
+.open-folder {
+    --manila-top: #ecd196;
+    --manila-mid: #e2be74;
+    --manila-bot: #d3ac60;
+    position: relative;
+    width: min(620px, 100%);
+    max-height: 88dvh;
+    padding: 3.1em 0.9em 1.6em;
+    box-sizing: border-box;
+    transform: translateY(26px) scale(0.96);
+    transition: transform 0.34s cubic-bezier(.2,.9,.25,1.1);
+    filter: drop-shadow(0 30px 44px rgba(0, 0, 0, 0.6));
+}
+.folder-reader.open .open-folder { transform: translateY(0) scale(1); }
+
+/* the back half of the opened manila folder */
+.open-folder-back {
+    position: absolute;
+    inset: 1.4em 0 0 0;
+    border-radius: 8px;
+    background:
+        linear-gradient(150deg, rgba(255,255,255,0.22), rgba(255,255,255,0) 26%),
+        linear-gradient(var(--manila-top), var(--manila-mid) 55%, var(--manila-bot));
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.5),
+        inset 0 0 0 1px rgba(120, 86, 34, 0.35);
+}
+
+/* the tab on the opened folder */
+.open-folder-tab {
+    position: absolute;
+    top: 0;
+    left: 2.2em;
+    min-width: 7em;
+    max-width: 60%;
+    height: 2.1em;
+    box-sizing: border-box;
+    padding: 0 1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    clip-path: polygon(7% 0, 93% 0, 100% 100%, 0 100%);
+    background: linear-gradient(var(--manila-top), var(--manila-mid));
+    border-top: 3px solid var(--accent, #c6543e);
+    border-radius: 6px 6px 0 0;
+    font-size: 0.46em;
+    line-height: 1.1;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #5c421c;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+/* the front flap folded down at the bottom */
+.open-folder-front {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 1.1em;
+    border-radius: 0 0 9px 9px;
+    background: linear-gradient(rgba(160,116,50,0.15), var(--manila-bot));
+    box-shadow: inset 0 2px 4px rgba(120, 86, 34, 0.4);
+}
+
+/* the sheet of paper carrying the content */
+.paper {
+    position: relative;
+    z-index: 2;
+    background:
+        linear-gradient(#fffdf8, #fbf7ee);
+    border-radius: 3px;
+    box-shadow:
+        0 2px 3px rgba(0, 0, 0, 0.18),
+        0 14px 26px rgba(0, 0, 0, 0.22);
+    padding: 1.6em 1.7em 1.9em;
+    max-height: calc(88dvh - 5em);
+    overflow-y: auto;
+    color: var(--primary-grey);
+}
+
+.paper-accent {
+    height: 5px;
+    width: 3.4em;
+    border-radius: 3px;
+    margin-bottom: 0.9em;
+}
+
+.paper h3 {
+    font: inherit;
+    margin: 0 0 1.1em;
+    font-size: 1.05em;
+    line-height: 1.2;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--primary-grey);
+}
+
+.reader-close {
+    position: absolute;
+    top: 0.35em;
+    right: 0.55em;
+    font-size: 1.5em;
+    line-height: 1;
+    color: var(--primary-grey);
+    opacity: 0.55;
+}
+.reader-close:hover { opacity: 1; color: var(--accent, #c6543e); }
+
+/* ── Document entries on the paper ───────────────────────────────── */
+.doc-entry {
+    padding: 0 0 1.1em;
+    margin-bottom: 1.1em;
+    border-bottom: 1px solid rgba(46, 46, 46, 0.12);
+}
+.doc-entry:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+.doc-entry-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1em;
+}
+.doc-role {
+    font-size: 0.72em;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--primary-grey);
+}
+.doc-dates {
+    flex: 0 0 auto;
+    font-size: 0.55em;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(46, 46, 46, 0.45);
+}
+.doc-org {
+    font-size: 0.62em;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent, #c6543e);
+    margin-top: 0.2em;
+}
+.doc-desc {
+    font-size: 0.62em;
+    line-height: 1.9;
+    letter-spacing: 0.06em;
+    margin: 0.5em 0 0;
+    color: rgba(46, 46, 46, 0.7);
+}

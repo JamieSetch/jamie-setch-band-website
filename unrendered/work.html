@@ -1,3 +1,163 @@
 <div class="{{HIDDEN}} page" data-nav="{{SHOW_NAV}}" id="work">
-    <h2>Work</h2>
+    <div class="work-inner">
+        <header class="work-header">
+            <h2>Work</h2>
+            <p class="work-sub">Pull a folder from the drawer.</p>
+        </header>
+
+        <div class="file-drawer" id="file-drawer">
+            <div class="drawer-lip"></div>
+            <!-- folders injected by the script below -->
+        </div>
+    </div>
+
+    <!-- opened-folder reader -->
+    <div class="folder-reader" id="folder-reader" aria-hidden="true">
+        <div class="reader-backdrop" id="reader-backdrop"></div>
+        <div class="open-folder" id="open-folder">
+            <div class="open-folder-back"></div>
+            <div class="open-folder-tab" id="reader-tab"></div>
+            <div class="paper" id="reader-paper">
+                <button class="reader-close" id="reader-close" aria-label="Close">&times;</button>
+                <div class="paper-accent" id="reader-accent"></div>
+                <h3 id="reader-title"></h3>
+                <div class="doc-body" id="reader-body"></div>
+            </div>
+            <div class="open-folder-front"></div>
+        </div>
+    </div>
+
+    <script>
+    (function () {
+        // ── Work sections ───────────────────────────────────────────────
+        // Each entry becomes one manila folder in the drawer. Edit the
+        // `entries` lists to fill in the real thing — `role`/`org`/`dates`
+        // are all optional, `desc` too. `accent` tints the tab edge and
+        // the paper's accent strip when the folder is opened.
+        var SECTIONS = [
+            {
+                label: 'Experience',
+                accent: '#C6543E',
+                entries: [
+                    { role: 'Job title', org: 'Organisation', dates: '2023 — Now',
+                      desc: 'Placeholder — what you did, what you built, what changed because you were there. Replace with the real thing.' },
+                    { role: 'Earlier role', org: 'Previous organisation', dates: '2021 — 2023',
+                      desc: 'Placeholder — a line or two on the work and the impact.' }
+                ]
+            },
+            {
+                label: 'Education &\nCertifications',
+                accent: '#3E7A6B',
+                entries: [
+                    { role: 'Degree / Programme', org: 'Institution', dates: '2018 — 2021',
+                      desc: 'Placeholder — field of study, focus, anything worth a mention.' },
+                    { role: 'Certification', org: 'Awarding body', dates: '2022',
+                      desc: 'Placeholder — what it certifies.' }
+                ]
+            },
+            {
+                label: 'Publications',
+                accent: '#4A6FA5',
+                entries: [
+                    { role: 'Paper title', org: 'Journal / Venue', dates: '2024',
+                      desc: 'Placeholder — authors, one-line summary, and a link once it is live.' }
+                ]
+            },
+            {
+                label: 'Projects &\nResearch',
+                accent: '#B08328',
+                entries: [
+                    { role: 'Project name', org: 'Context', dates: '2023',
+                      desc: 'Placeholder — what it is and why it mattered.' }
+                ]
+            },
+            {
+                label: 'Talks &\nAwards',
+                accent: '#8A5A9C',
+                entries: [
+                    { role: 'Talk or award', org: 'Event / Body', dates: '2024',
+                      desc: 'Placeholder — a sentence of context.' }
+                ]
+            }
+        ];
+
+        var drawer = document.getElementById('file-drawer');
+        var reader = document.getElementById('folder-reader');
+        var openFolder = document.getElementById('open-folder');
+        var readerTab = document.getElementById('reader-tab');
+        var readerTitle = document.getElementById('reader-title');
+        var readerBody = document.getElementById('reader-body');
+        var readerAccent = document.getElementById('reader-accent');
+
+        // three staggered tab cuts (left / centre / right), like a real drawer
+        var TAB_POS = ['tab-l', 'tab-c', 'tab-r'];
+
+        // the stack maths in work.css need the folder count
+        drawer.style.setProperty('--n', SECTIONS.length);
+
+        function esc(s) {
+            return String(s).replace(/[&<>"]/g, function (c) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+            });
+        }
+
+        function labelHtml(label) {
+            return esc(label).replace(/\n/g, '<br>');
+        }
+
+        SECTIONS.forEach(function (section, i) {
+            var folder = document.createElement('button');
+            folder.className = 'folder ' + TAB_POS[i % TAB_POS.length];
+            folder.style.setProperty('--accent', section.accent);
+            folder.style.setProperty('--i', i);
+            // first section is the front folder; each one after files behind it
+            folder.style.zIndex = SECTIONS.length - i;
+            folder.innerHTML =
+                '<span class="folder-papers"><i></i><i></i><i></i></span>' +
+                '<span class="folder-body"></span>' +
+                '<span class="folder-tab"><span class="tab-label">' + labelHtml(section.label) + '</span></span>';
+            folder.addEventListener('click', function () { openSection(section); });
+            drawer.appendChild(folder);
+        });
+
+        function entryHtml(e) {
+            var head = '';
+            if (e.role || e.dates) {
+                head = '<div class="doc-entry-head">' +
+                    '<span class="doc-role">' + esc(e.role || '') + '</span>' +
+                    (e.dates ? '<span class="doc-dates">' + esc(e.dates) + '</span>' : '') +
+                    '</div>';
+            }
+            var org = e.org ? '<div class="doc-org">' + esc(e.org) + '</div>' : '';
+            var desc = e.desc ? '<p class="doc-desc">' + esc(e.desc) + '</p>' : '';
+            return '<div class="doc-entry">' + head + org + desc + '</div>';
+        }
+
+        function openSection(section) {
+            readerTitle.innerHTML = labelHtml(section.label);
+            readerTab.innerHTML = labelHtml(section.label);
+            readerAccent.style.background = section.accent;
+            readerTab.style.setProperty('--accent', section.accent);
+            openFolder.style.setProperty('--accent', section.accent);
+            readerBody.innerHTML = section.entries.length
+                ? section.entries.map(entryHtml).join('')
+                : '<p class="doc-desc">Nothing filed here yet.</p>';
+            reader.classList.add('open');
+            reader.setAttribute('aria-hidden', 'false');
+            document.body.classList.add('reader-open');
+        }
+
+        function closeReader() {
+            reader.classList.remove('open');
+            reader.setAttribute('aria-hidden', 'true');
+            document.body.classList.remove('reader-open');
+        }
+
+        document.getElementById('reader-close').addEventListener('click', closeReader);
+        document.getElementById('reader-backdrop').addEventListener('click', closeReader);
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && reader.classList.contains('open')) closeReader();
+        });
+    })();
+    </script>
 </div>
