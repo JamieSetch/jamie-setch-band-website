@@ -5,11 +5,18 @@
     <div class="quest-tooltip hidden" id="quest-tooltip"></div>
 
     <div class="quest-panel" id="quest-panel">
-        <div class="quest-panel-accent" id="quest-panel-accent"></div>
+        <div class="quest-flag" id="quest-panel-flag"></div>
         <button class="quest-panel-close" id="quest-panel-close" aria-label="Close">&times;</button>
-        <h3 id="quest-panel-title"></h3>
-        <div class="quest-photos" id="quest-photos"></div>
-        <p id="quest-panel-text"></p>
+        <div class="quest-panel-body">
+            <div class="quest-photo-wrap" id="quest-photo-wrap"></div>
+            <h3 id="quest-panel-title"></h3>
+            <p id="quest-panel-text"></p>
+        </div>
+    </div>
+
+    <div class="quest-lightbox" id="quest-lightbox" hidden>
+        <button class="qlb-close" id="qlb-close" aria-label="Close">&times;</button>
+        <div class="qlb-images" id="qlb-images"></div>
     </div>
 
     <script>
@@ -22,26 +29,58 @@
         // tints the panel accent bar.
         // 'images' is a list of photo urls shown in the panel (placeholder
         // tiles appear for any missing).
+        var PLACEHOLDER = 'Placeholder — add the real story and photos here.';
         var QUESTS = {
-            'Nepal': {
-                flag: 'np',
-                colour: '#E07A5F',
-                title: 'Nepal',
-                text: 'Placeholder story — trekking tea houses, prayer flags and a borrowed guitar somewhere on the Annapurna circuit. Replace this text with the real quest.',
-                images: []
-            },
+            'Nepal':                  { flag: 'np', title: 'Nepal',           text: 'Placeholder story — trekking tea houses, prayer flags and a borrowed guitar somewhere on the Annapurna circuit. Replace this text with the real quest.', images: [] },
+            'Egypt':                  { flag: 'eg', title: 'Egypt',           text: PLACEHOLDER, images: [] },
+            'United Kingdom':         { flag: 'gb', title: 'United Kingdom',  text: PLACEHOLDER, images: [] },
+            'Spain':                  { flag: 'es', title: 'Spain',           text: PLACEHOLDER, images: [] },
+            'France':                 { flag: 'fr', title: 'France',          text: PLACEHOLDER, images: [] },
+            'Belgium':                { flag: 'be', title: 'Belgium',         text: PLACEHOLDER, images: [] },
+            'Malta':                  { flag: 'mt', title: 'Malta',           text: PLACEHOLDER, images: [] },
+            'Poland':                 { flag: 'pl', title: 'Poland',          text: PLACEHOLDER, images: [] },
+            'Iceland':                { flag: 'is', title: 'Iceland',         text: PLACEHOLDER, images: [] },
+            'Germany':                { flag: 'de', title: 'Germany',         text: PLACEHOLDER, images: [] },
+            'Netherlands':            { flag: 'nl', title: 'Netherlands',     text: PLACEHOLDER, images: [] },
+            'Greece':                 { flag: 'gr', title: 'Greece',          text: PLACEHOLDER, images: [] },
+            'Austria':                { flag: 'at', title: 'Austria',         text: PLACEHOLDER, images: [] },
+            'Portugal':               { flag: 'pt', title: 'Portugal',        text: PLACEHOLDER, images: [] },
+            'United Arab Emirates':   { flag: 'ae', title: 'United Arab Emirates (Dubai)', text: PLACEHOLDER, images: [] },
         };
         var PALETTE = ['#E07A5F', '#81B29A', '#F2CC8F', '#7A9CC6', '#D48CB3', '#9A8C98'];
+
+        // ── Oceans ──────────────────────────────────────────────────────
+        // Labels drawn in open water, in the banner font, and clickable —
+        // give one a 'title'/'text'/'images' later and its panel fills in.
+        var OCEANS = {
+            'Pacific Ocean':  { lon: -140, lat: -18 },
+            'Atlantic Ocean': { lon: -32,  lat: 8 },
+            'Indian Ocean':   { lon: 80,   lat: -33 },
+            'Southern Ocean': { lon: 20,   lat: -59 },
+            'Arctic Ocean':   { lon: 25,   lat: 82 }
+        };
+
+        // Miller projection — same maths as make-world-map.py, so labels
+        // land exactly where the coastlines do.
+        var DEG = Math.PI / 180;
+        var PROJ_SCALE = 1000 / (2 * Math.PI);
+        function millerY(lat) { return 1.25 * Math.log(Math.tan(Math.PI / 4 + 0.4 * lat * DEG)); }
+        var Y_TOP = millerY(84);
+        function projX(lon) { return (lon * DEG + Math.PI) * PROJ_SCALE; }        // 0..1000
+        function projY(lat) { return (Y_TOP - millerY(lat)) * PROJ_SCALE; }       // 0..VBH
+        var VBW = 1000, VBH = 535;
 
         var page = document.getElementById('side-quests');
         var viewport = document.getElementById('map-viewport');
         var strip = document.getElementById('map-strip');
         var tooltip = document.getElementById('quest-tooltip');
         var panel = document.getElementById('quest-panel');
-        var accentEl = document.getElementById('quest-panel-accent');
+        var flagEl = document.getElementById('quest-panel-flag');
         var titleEl = document.getElementById('quest-panel-title');
-        var photosEl = document.getElementById('quest-photos');
+        var photoWrapEl = document.getElementById('quest-photo-wrap');
         var textEl = document.getElementById('quest-panel-text');
+        var lightbox = document.getElementById('quest-lightbox');
+        var lbImages = document.getElementById('qlb-images');
 
         // ── Cursors: normal pointer over land, sailboat over water ──────
         // The boat matches the banner's thin white line-work.
@@ -64,31 +103,63 @@
             if (!q) return;
             titleEl.textContent = q.title || name;
             textEl.textContent = q.text || '';
-            accentEl.style.backgroundColor = q.colour || '';
-            photosEl.innerHTML = '';
+            // Top banner = the country's national flag (falls back to colour)
+            if (q.flag) {
+                flagEl.style.backgroundImage = 'url(/assets/flags/' + q.flag + '.svg)';
+                flagEl.style.backgroundColor = '';
+            } else {
+                flagEl.style.backgroundImage = '';
+                flagEl.style.backgroundColor = q.colour || '';
+            }
+            // One photo, with a "+N" badge to open the rest in a lightbox
             var imgs = q.images || [];
-            var slots = Math.max(imgs.length, 2);   // always leave photo room
-            for (var i = 0; i < slots; i++) {
-                if (imgs[i]) {
-                    var img = document.createElement('img');
-                    img.src = imgs[i];
-                    img.alt = (q.title || name) + ' photo';
-                    photosEl.appendChild(img);
-                } else {
-                    var ph = document.createElement('div');
-                    ph.className = 'quest-photo-ph';
-                    ph.textContent = 'Photo';
-                    photosEl.appendChild(ph);
+            photoWrapEl.innerHTML = '';
+            if (imgs.length) {
+                var img = document.createElement('img');
+                img.src = imgs[0];
+                img.alt = (q.title || name) + ' photo';
+                photoWrapEl.appendChild(img);
+                if (imgs.length > 1) {
+                    var more = document.createElement('button');
+                    more.type = 'button';
+                    more.className = 'quest-more';
+                    more.textContent = '+' + (imgs.length - 1);
+                    more.addEventListener('click', function () { openLightbox(imgs, q.title || name); });
+                    photoWrapEl.appendChild(more);
                 }
+            } else {
+                var ph = document.createElement('div');
+                ph.className = 'quest-photo-ph';
+                ph.textContent = 'Photo';
+                photoWrapEl.appendChild(ph);
             }
             panel.classList.add('open');
         }
         function closePanel() {
             panel.classList.remove('open');
         }
+        function openLightbox(imgs, title) {
+            lbImages.innerHTML = '';
+            imgs.forEach(function (src) {
+                var im = document.createElement('img');
+                im.src = src;
+                im.alt = title + ' photo';
+                lbImages.appendChild(im);
+            });
+            lightbox.hidden = false;
+            requestAnimationFrame(function () { lightbox.classList.add('open'); });
+        }
+        function closeLightbox() {
+            lightbox.classList.remove('open');
+            setTimeout(function () { lightbox.hidden = true; }, 300);
+        }
         document.getElementById('quest-panel-close').addEventListener('click', closePanel);
+        document.getElementById('qlb-close').addEventListener('click', closeLightbox);
+        lightbox.addEventListener('click', function (e) { if (e.target === lightbox) closeLightbox(); });
         document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape') closePanel();
+            if (e.key !== 'Escape') return;
+            if (!lightbox.hidden) closeLightbox();
+            else closePanel();
         });
 
         // ── Fill the space between the nav and the signup banner ────────
@@ -135,7 +206,33 @@
                 s.style.width = vw + 'px';
                 s.style.height = vh + 'px';
             });
+            positionOceanLabels();
             clampY();
+        }
+
+        // ── Ocean labels (HTML overlay, moves with the map) ─────────────
+        var oceanLabels = [];
+        function buildOceanLabels() {
+            Object.keys(OCEANS).forEach(function (name) {
+                var o = OCEANS[name];
+                for (var c = 0; c < 3; c++) {   // one per tiled copy
+                    var el = document.createElement('button');
+                    el.type = 'button';
+                    el.className = 'ocean-label';
+                    el.innerHTML = name.split(' ').join('<br>');   // stack the words
+                    el.setAttribute('data-ocean', name);
+                    strip.appendChild(el);
+                    oceanLabels.push({ el: el, lon: o.lon, lat: o.lat, copy: c });
+                }
+            });
+            positionOceanLabels();
+        }
+        function positionOceanLabels() {
+            for (var i = 0; i < oceanLabels.length; i++) {
+                var L = oceanLabels[i];
+                L.el.style.left = (projX(L.lon) / VBW * mapW + L.copy * mapW) + 'px';
+                L.el.style.top = (projY(L.lat) / VBH * mapH) + 'px';
+            }
         }
 
         var AUTO_DRIFT = 0.25;     // px per frame — slow constant travel
@@ -214,6 +311,29 @@
             }
         });
 
+        // Bounding box of a country's largest sub-shape (its mainland), so
+        // far-flung territories don't inflate the flag's fill area.
+        function mainlandBBox(pathEl) {
+            var d = pathEl.getAttribute('d') || '';
+            var subs = d.split('M');
+            var best = null;
+            for (var s = 0; s < subs.length; s++) {
+                var nums = subs[s].match(/-?\d+(?:\.\d+)?/g);
+                if (!nums || nums.length < 6) continue;
+                var minx = Infinity, miny = Infinity, maxx = -Infinity, maxy = -Infinity;
+                for (var k = 0; k + 1 < nums.length; k += 2) {
+                    var x = parseFloat(nums[k]), y = parseFloat(nums[k + 1]);
+                    if (x < minx) minx = x; if (x > maxx) maxx = x;
+                    if (y < miny) miny = y; if (y > maxy) maxy = y;
+                }
+                var area = (maxx - minx) * (maxy - miny);
+                if (!best || area > best.area) {
+                    best = { x: minx, y: miny, width: maxx - minx, height: maxy - miny, area: area };
+                }
+            }
+            return best || pathEl.getBBox();
+        }
+
         // ── Load the map once, the first time the page is shown ─────────
         var loaded = false;
         function ensureMap() {
@@ -228,6 +348,10 @@
                     });
                     var SVGNS = 'http://www.w3.org/2000/svg';
                     var firstSvg = strip.querySelector('svg');
+                    if (firstSvg.viewBox && firstSvg.viewBox.baseVal) {
+                        VBW = firstSvg.viewBox.baseVal.width || VBW;
+                        VBH = firstSvg.viewBox.baseVal.height || VBH;
+                    }
                     var defs = document.createElementNS(SVGNS, 'defs');
                     firstSvg.insertBefore(defs, firstSvg.firstChild);
                     var names = Object.keys(QUESTS);
@@ -238,10 +362,11 @@
                         var colour = q.colour || PALETTE[i % PALETTE.length];
                         var fill = colour;
                         if (q.flag) {
-                            // Flag pattern pinned to the country's bounding box,
-                            // scaled to cover it (slice) — the path clips it to
-                            // the country silhouette.
-                            var bb = els[0].getBBox();
+                            // Flag pattern pinned to the country's MAINLAND bbox
+                            // (largest sub-shape) — otherwise distant overseas
+                            // territories (French Guiana, Dutch Caribbean, the
+                            // Azores…) blow the bbox up and stretch the flag.
+                            var bb = mainlandBBox(els[0]);
                             var pid = 'flag-' + q.flag + '-' + i;
                             var pat = document.createElementNS(SVGNS, 'pattern');
                             pat.setAttribute('id', pid);
@@ -251,7 +376,7 @@
                             pat.setAttribute('width', bb.width);
                             pat.setAttribute('height', bb.height);
                             var img = document.createElementNS(SVGNS, 'image');
-                            img.setAttribute('href', '/assets/flags/' + q.flag + '.png');
+                            img.setAttribute('href', '/assets/flags/' + q.flag + '.svg');
                             img.setAttribute('width', bb.width);
                             img.setAttribute('height', bb.height);
                             img.setAttribute('preserveAspectRatio', 'xMidYMid slice');
@@ -264,6 +389,7 @@
                             p.style.fill = fill;
                         });
                     });
+                    buildOceanLabels();
                     layout();
                 });
         }

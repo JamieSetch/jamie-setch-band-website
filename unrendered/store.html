@@ -1,13 +1,50 @@
 <div class="{{HIDDEN}} page" data-nav="{{SHOW_NAV}}" id="store">
     <div class="store-view" id="store-grid">
-        <h2>Store</h2>
-        <p class="store-sub">Wear the record. Carry the tour.</p>
-        <div class="store-items">
+        <div class="store-head">
+            <div class="store-crumbs">
+                <a href="/home" data-navid="home" class="nav-link">Home</a>
+                <span>&rsaquo;</span>
+                <span>Store</span>
+            </div>
+            <span class="store-brand">Jamie Setch</span>
+            <span class="store-head-spacer" aria-hidden="true"></span>
+        </div>
+        <div class="store-hero" role="img" aria-label="Store hero"></div>
+        <div class="store-toolbar">
+            <button class="store-tool" type="button" id="store-filter">
+                Filter
+                <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M1 3h14M4 8h8M6 13h4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            </button>
+            <label class="store-tool store-sort">
+                Sort by
+                <select id="store-sort-select" aria-label="Sort products">
+                    <option value="featured">Featured</option>
+                    <option value="price-asc">Price: low to high</option>
+                    <option value="price-desc">Price: high to low</option>
+                    <option value="name">Alphabetical</option>
+                </select>
+            </label>
+        </div>
+        <div class="store-items" id="store-items">
             {{STORE_ITEMS}}
         </div>
     </div>
 
     {{STORE_PRODUCTS}}
+
+    <!-- Newsletter pop-down (Nick-Cave-style "before you go") -->
+    <div class="store-newsletter" id="store-newsletter" hidden>
+        <div class="sn-backdrop" id="sn-backdrop"></div>
+        <div class="sn-card">
+            <button class="sn-close" id="sn-close" type="button" aria-label="Close">&times;</button>
+            <h3>Before you go,<br>sign up to the newsletter</h3>
+            <p>Be the first to hear about exclusive news, music and events from Jamie Setch.</p>
+            <form class="sn-form" id="sn-form">
+                <input type="email" class="sn-input" placeholder="Enter your email address" required>
+                <button type="submit" class="sn-subscribe">Subscribe</button>
+            </form>
+        </div>
+    </div>
 
     <script>
     (function () {
@@ -63,8 +100,57 @@
 
         // Reset to the grid whenever the store page is (re)shown
         new MutationObserver(function () {
-            if (!store.classList.contains('hidden')) backToGrid();
+            if (!store.classList.contains('hidden')) { backToGrid(); maybeShowNewsletter(); }
         }).observe(store, { attributes: true, attributeFilter: ['class'] });
+
+        // ── Sort dropdown ───────────────────────────────────────────────
+        var itemsWrap = document.getElementById('store-items');
+        var priceOf = function (card) {
+            var m = (card.querySelector('.item-price') || {}).textContent || '';
+            var n = parseFloat(m.replace(/[^0-9.]/g, ''));
+            return isNaN(n) ? 0 : n;
+        };
+        var nameOf = function (card) {
+            return ((card.querySelector('.item-name') || {}).textContent || '').trim().toLowerCase();
+        };
+        var original = Array.prototype.slice.call(itemsWrap.querySelectorAll('.store-item'));
+        document.getElementById('store-sort-select').addEventListener('change', function () {
+            var arr = original.slice();
+            if (this.value === 'price-asc') arr.sort(function (a, b) { return priceOf(a) - priceOf(b); });
+            else if (this.value === 'price-desc') arr.sort(function (a, b) { return priceOf(b) - priceOf(a); });
+            else if (this.value === 'name') arr.sort(function (a, b) { return nameOf(a) < nameOf(b) ? -1 : 1; });
+            arr.forEach(function (c) { itemsWrap.appendChild(c); });
+        });
+
+        // ── Newsletter pop-down ─────────────────────────────────────────
+        var NL_KEY = 'js-newsletter-dismissed';
+        var nl = document.getElementById('store-newsletter');
+        var nlTimer = null;
+        function closeNewsletter() {
+            nl.classList.remove('open');
+            try { sessionStorage.setItem(NL_KEY, '1'); } catch (e) {}
+            setTimeout(function () { nl.hidden = true; }, 350);
+        }
+        function maybeShowNewsletter() {
+            try { if (sessionStorage.getItem(NL_KEY)) return; } catch (e) {}
+            if (nlTimer) return;
+            nlTimer = setTimeout(function () {
+                if (store.classList.contains('hidden')) return;
+                nl.hidden = false;
+                requestAnimationFrame(function () { nl.classList.add('open'); });
+            }, 1400);
+        }
+        document.getElementById('sn-close').addEventListener('click', closeNewsletter);
+        document.getElementById('sn-backdrop').addEventListener('click', closeNewsletter);
+        document.getElementById('sn-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            var card = nl.querySelector('.sn-card');
+            card.innerHTML = '<button class="sn-close" id="sn-close2" type="button" aria-label="Close">&times;</button>'
+                + '<h3>Thank you</h3><p>You’re on the list. Keep an eye on your inbox.</p>';
+            document.getElementById('sn-close2').addEventListener('click', closeNewsletter);
+            try { sessionStorage.setItem(NL_KEY, '1'); } catch (e2) {}
+        });
+        if (!store.classList.contains('hidden')) maybeShowNewsletter();
     })();
     </script>
 </div>

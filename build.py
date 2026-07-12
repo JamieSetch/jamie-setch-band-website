@@ -27,16 +27,20 @@ def get_store_html():
     items = json.load(f)
     f.close()
 
-    # Grid of product cards. Each card is a button that opens that product's
-    # detail panel (handled by the store's own script — no page reload).
+    # "Coming soon" mode: the real products (images, prices, detail pages)
+    # are kept in items/store.json, but the grid shows placeholders for now.
+    # Left placeholder reads "Coming", right one "Soon".
+    labels = {}
+    if items:
+        labels[0] = 'Coming'
+        labels[len(items) - 1] = 'Soon'
     cards = ''
-    for item in items:
+    for i, item in enumerate(items):
+        label = labels.get(i, '')
         cards += f'''
-            <button class="store-item" type="button" data-product="{item['id']}">
-                <div class="store-item-img"><img src="{item['image']}" alt="{item['name']}"></div>
-                <div class="item-name">{item['name']}</div>
-                <div class="item-price">{item['price']}</div>
-            </button>
+            <div class="store-item store-item-soon">
+                <div class="store-item-img store-placeholder">{label}</div>
+            </div>
         '''
 
     # One detail panel per product: gallery (main image + thumbnails),
@@ -102,10 +106,19 @@ def build():
     f = open('items/socials.json')
     socials = json.load(f)
     f.close()
+
+    # the now-playing mini player links out to Spotify (the industry's
+    # headline metric); album art comes from now-playing.json
+    apple_link = next((s['link'] for s in socials if 'apple' in s['icon'].lower()), '#')
+    spotify_link = next((s['link'] for s in socials if 'spotify' in s['icon'].lower()), apple_link)
+    template = template.replace('{{APPLE_LINK}}', apple_link)
+    template = template.replace('{{SPOTIFY_LINK}}', spotify_link)
+    template = template.replace('{{SONG_ART}}', nowPlaying.get('art', 'assets/albums/wave-cover.webp'))
+
     social_html = ''
     for social in socials:
         social_html += f'''
-            <a href="{social['link']}">
+            <a href="{social['link']}" target="_blank" rel="noopener">
 
                 <svg width="200" height="200">
                     <defs>

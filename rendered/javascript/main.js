@@ -21,12 +21,6 @@ function navigateTo(page) {
         el.classList.add('selected')
     }
 
-    const selectedEl = document.querySelector('.main-nav .links > a.selected')
-    if (selectedEl) {
-        selectedEl.classList.remove('selected')
-    }
-    document.querySelector('.main-nav .links > a[data-navid="' + page + '"]').classList.add('selected')
-
     sessionStorage.setItem('last-page', sessionStorage.getItem('current-page'))
     sessionStorage.setItem('current-page', page)
 }
@@ -44,16 +38,19 @@ function goBack() {
 }
 
 var playingMusic = false
+function setPlayIcon(src) {
+    document.querySelectorAll('.np-play-mini img, #np-play-big img').forEach((img) => { img.src = src })
+}
 function playMusic() {
     document.querySelector('.now-playing').classList.remove('hidden')
     document.querySelector('.now-playing audio').play()
-    document.querySelector('.now-playing button img').src = '/assets/icons/pause.svg'
+    setPlayIcon('/assets/icons/pause.svg')
     playingMusic = true
 }
 
 function pauseMusic() {
     document.querySelector('.now-playing audio').pause()
-    document.querySelector('.now-playing button img').src = '/assets/icons/play.svg'
+    setPlayIcon('/assets/icons/play.svg')
     AHHHHHH = true
     playingMusic = false
 }

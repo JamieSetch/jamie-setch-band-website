@@ -1,39 +1,109 @@
 
 #store {
+    --mono: "Courier New", ui-monospace, monospace;
     color: var(--primary-grey);
     background-color: var(--primary-white);
-    padding: 0 3em 2em;
+    padding: 0 clamp(1.5em, 4vw, 4em) 3em;
     box-sizing: border-box;
-    /* fill the viewport minus the 72px top-bar nav, so a short grid
-       doesn't push the page past 100vh and spawn a scrollbar */
     min-height: calc(100vh - 72px);
 }
 
-#store h2 {
-    text-align: center;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    padding-top: 0.6em;
-    padding-bottom: 0.15em;
-    margin: 0;
-    font-size: 3em;
+/* ── Full-bleed hero banner (Nick-Cave-style) ─────────────── */
+.store-hero {
+    /* cancel the #store side padding so the image spans edge to edge */
+    margin: 0 calc(-1 * clamp(1.5em, 4vw, 4em));
+    height: 56vh;
+    min-height: 300px;
+    background-image: url('/assets/cover.webp');
+    background-size: cover;
+    background-position: center 68%;
 }
 
-.store-sub {
-    text-align: center;
-    margin: 0 0 2.5em;
-    font-size: 0.95em;
-    letter-spacing: 0.05em;
+/* ── Header row (above the hero): breadcrumb left, brand centred ── */
+.store-head {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 1em;
+    padding: 1.25em 0;
+}
+
+.store-brand {
+    justify-self: center;
+    font-family: var(--mono);
+    font-size: 0.62em;                 /* same size as the breadcrumb */
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+}
+
+.store-crumbs {
+    justify-self: start;
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    font-family: var(--mono);
+    font-size: 0.62em;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
     color: rgba(46, 46, 46, 0.55);
+}
+
+.store-crumbs a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.store-crumbs a:hover {
+    color: var(--primary-grey);
+}
+
+/* ── Filter / sort toolbar ─────────────────────────────────── */
+.store-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0;                     /* sit flush under the hero image */
+    padding: 1.1em 0;
+    border-bottom: 1px solid rgba(46, 46, 46, 0.16);
+}
+
+.store-tool {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6em;
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 0.62em;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+}
+
+.store-sort select {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 1em;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding-left: 0.4em;
+}
+
+.store-sort select:focus {
+    outline: none;
 }
 
 /* ── Product grid ─────────────────────────────────────────── */
 .store-items {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 2.5em 2em;
-    max-width: 62em;
-    margin: auto;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 2.8em 1.6em;
+    margin: 2.6em 0 0;
 }
 
 .store-item {
@@ -46,40 +116,178 @@
     font: inherit;
     display: flex;
     flex-direction: column;
-    gap: 0.5em;
+    gap: 1em;
 }
 
 .store-item-img {
     aspect-ratio: 1 / 1;
-    background-color: #f2eee9;
+    background-color: #ffffff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    display: grid;
+    place-content: center;
     overflow: hidden;
+}
+
+/* coming-soon placeholder tiles */
+.store-item-soon {
+    cursor: default;
+}
+
+.store-placeholder {
+    background-color: #efece7;
+    box-shadow: none;
+    color: rgba(46, 46, 46, 0.45);
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    font-size: 1.3em;
 }
 
 .store-item-img > img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
+    padding: 9%;
+    box-sizing: border-box;
     transition: 0.4s transform;
 }
 
 .store-item:hover .store-item-img > img {
-    transform: scale(1.05);
+    transform: scale(1.04);
 }
 
 .store-item > .item-name {
-    font-size: 1.15em;
+    font-size: 1.05em;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.05em;
+    line-height: 1.4;
     transition: 0.3s color;
 }
 
 .store-item:hover > .item-name {
-    color: var(--primary-clr-dark, #b89a00);
+    color: rgba(46, 46, 46, 0.55);
 }
 
 .store-item > .item-price {
-    font-size: 0.9em;
+    font-size: 0.95em;
     color: rgba(46, 46, 46, 0.6);
+    margin-top: -0.4em;
+}
+
+/* ── Newsletter pop-down ───────────────────────────────────── */
+.store-newsletter {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+}
+
+.store-newsletter[hidden] {
+    display: none;
+}
+
+.sn-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    opacity: 0;
+    transition: 0.35s opacity;
+}
+
+.store-newsletter.open .sn-backdrop {
+    opacity: 1;
+}
+
+.sn-card {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -110%);
+    transition: 0.42s transform cubic-bezier(0.22, 1, 0.36, 1);
+    width: min(680px, 92vw);
+    box-sizing: border-box;
+    background: #ffffff;
+    color: var(--primary-grey);
+    padding: 2.6em 2.6em 2.8em;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+.store-newsletter.open .sn-card {
+    transform: translate(-50%, 2.5vh);
+}
+
+.sn-close {
+    position: absolute;
+    top: 0.7em;
+    right: 0.9em;
+    font-size: 1.7em;
+    line-height: 1;
+    color: var(--primary-grey);
+    transition: 0.25s opacity;
+    opacity: 0.7;
+}
+
+.sn-close:hover {
+    opacity: 1;
+}
+
+.sn-card h3 {
+    font-family: var(--mono);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 1.15em;
+    letter-spacing: 0.12em;
+    line-height: 1.5;
+    margin: 0 0 0.8em;
+}
+
+.sn-card p {
+    font-family: var(--mono);
+    font-size: 0.75em;
+    letter-spacing: 0.03em;
+    line-height: 1.6;
+    color: rgba(46, 46, 46, 0.8);
+    margin: 0 auto 1.6em;
+    max-width: 34em;
+}
+
+.sn-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9em;
+    max-width: 32em;
+    margin: 0 auto;
+}
+
+.sn-input {
+    border: 1px solid rgba(46, 46, 46, 0.4);
+    background: #fff;
+    padding: 1.05em 1.1em;
+    font-family: var(--mono);
+    font-size: 0.78em;
+    letter-spacing: 0.04em;
+    color: var(--primary-grey);
+}
+
+.sn-input:focus {
+    outline: none;
+    border-color: var(--primary-grey);
+}
+
+.sn-subscribe {
+    background: var(--primary-grey);
+    color: #fff;
+    border: none;
+    padding: 1.15em;
+    font-family: var(--mono);
+    font-size: 0.72em;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    cursor: pointer;
+    transition: 0.25s background;
+}
+
+.sn-subscribe:hover {
+    background: #000;
 }
 
 /* ── Product detail ───────────────────────────────────────── */

@@ -51,6 +51,26 @@
     filter: brightness(1.25);
 }
 
+/* ── Ocean labels (banner font, sit on the water, clickable) ─── */
+.ocean-label {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    background: none;
+    border: none;
+    padding: 0.3em 0.5em;
+    text-align: center;
+    line-height: 1.7;                 /* good gap between the stacked words */
+    font-family: 'romens-dawn', albertus, serif;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    font-size: 0.62em;
+    color: rgba(255, 255, 255, 0.68);
+    text-shadow: 0 1px 7px rgba(0, 0, 0, 0.9);
+    /* plain labels for now — nothing to open in the oceans yet */
+    cursor: inherit;
+    pointer-events: none;
+}
+
 .quest-tooltip {
     position: fixed;
     pointer-events: none;
@@ -73,7 +93,7 @@
     box-sizing: border-box;
     background-color: var(--primary-white);
     color: var(--primary-grey);
-    padding: 2.2em 2em 2em;
+    padding: 0;
     overflow-y: auto;
     transform: translateX(-105%);
     transition: 0.35s transform;
@@ -85,39 +105,60 @@
     transform: translateX(0);
 }
 
-.quest-panel-accent {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 6px;
-    background-color: var(--primary-clr);
+/* national flag as the top banner of the panel — contained so the whole
+   flag shows at its true proportions (never cropped or stretched) */
+.quest-flag {
+    height: 120px;
+    background-size: auto 76%;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: #eeeae4;
+    border-bottom: 1px solid rgba(46, 46, 46, 0.12);
+    flex-shrink: 0;
 }
 
-.quest-panel h3 {
-    font: inherit;
-    font-size: 1.2em;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    margin: 0 0 1em;
+.quest-panel-body {
+    padding: 1.5em 2em 2em;
 }
 
-.quest-photos {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.8em;
-    margin-bottom: 1.2em;
-}
-
-.quest-photos img {
-    width: 100%;
+/* single photo, with a "+N" badge to open the rest */
+.quest-photo-wrap {
+    position: relative;
     aspect-ratio: 4 / 3;
+    margin-bottom: 1.2em;
+    overflow: hidden;
+}
+
+.quest-photo-wrap img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
     display: block;
 }
 
+.quest-more {
+    position: absolute;
+    bottom: 0.7em;
+    right: 0.7em;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    border: none;
+    padding: 0.45em 0.75em;
+    font: inherit;
+    font-size: 0.7em;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: 0.25s background;
+}
+
+.quest-more:hover {
+    background: rgba(0, 0, 0, 0.82);
+}
+
 .quest-photo-ph {
-    aspect-ratio: 4 / 3;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
     background-color: rgba(46, 46, 46, 0.08);
     border: 1px dashed rgba(46, 46, 46, 0.3);
     display: grid;
@@ -126,6 +167,15 @@
     letter-spacing: 0.25em;
     text-transform: uppercase;
     color: rgba(46, 46, 46, 0.4);
+}
+
+/* country name sits below the photo */
+.quest-panel h3 {
+    font: inherit;
+    font-size: 1.2em;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin: 0 0 0.9em;
 }
 
 .quest-panel p {
@@ -140,11 +190,62 @@
     top: 0.4em;
     right: 0.5em;
     font-size: 1.4em;
-    color: var(--primary-grey);
+    color: #fff;
     line-height: 1;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+    z-index: 2;
 }
 
 .quest-panel-close:hover {
+    color: var(--primary-clr);
+}
+
+/* lightbox for the full set of photos */
+.quest-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: rgba(0, 0, 0, 0.9);
+    overflow-y: auto;
+    padding: 4em 1.5em;
+    box-sizing: border-box;
+    opacity: 0;
+    transition: 0.3s opacity;
+}
+
+.quest-lightbox.open {
+    opacity: 1;
+}
+
+.quest-lightbox[hidden] {
+    display: none;
+}
+
+.qlb-images {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1em;
+    max-width: 60em;
+    margin: 0 auto;
+}
+
+.qlb-images img {
+    width: 100%;
+    display: block;
+    border-radius: 2px;
+}
+
+.qlb-close {
+    position: fixed;
+    top: 0.6em;
+    right: 0.8em;
+    font-size: 2em;
+    line-height: 1;
+    color: #fff;
+    z-index: 51;
+}
+
+.qlb-close:hover {
     color: var(--primary-clr);
 }
 

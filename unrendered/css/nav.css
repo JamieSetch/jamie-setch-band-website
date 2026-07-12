@@ -1,7 +1,14 @@
 
-@font-face { 
-    font-family: albertus; 
-    src: url('assets/albertusmedium_regular.ttf'), local('Arial'), local('system-ui'); 
+@font-face {
+    font-family: albertus;
+    src: url('assets/albertusmedium_regular.ttf'), local('Arial'), local('system-ui');
+    font-style: normal;
+}
+
+@font-face {
+    /* demo licence — buy the commercial licence from FlawlessAndCo before launch */
+    font-family: 'romens-dawn';
+    src: url('assets/romens-dawn-regular.ttf');
     font-style: normal;
 }
 
@@ -12,7 +19,7 @@ body {
     line-height: 1.6;
     font-size: 1.3em;
     color: white;
-    font-family: albertus;
+    font-family: 'romens-dawn', albertus, serif;
     letter-spacing: 0.2em;
     --primary-clr: hsl(55, 94%, 54%);
     --primary-clr-transparent: hsla(55, 94%, 54%, 0.4);
@@ -23,6 +30,22 @@ body {
 
 body.side-nav-open {
     overflow: hidden;
+}
+
+/* Starlings page is locked to the viewport — no scrollbar */
+html.no-page-scroll {
+    overflow: hidden;
+}
+
+/* Store still scrolls, but with the scrollbar hidden from view */
+html.hide-scrollbar {
+    scrollbar-width: none;             /* Firefox */
+}
+
+html.hide-scrollbar::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;                     /* Chrome / Safari */
 }
 
 
@@ -80,6 +103,18 @@ nav::before {
     z-index: -1;
 }
 
+/* charcoal band behind the icons + store button on the home page */
+nav[data-size="full"]::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 72px;
+    background-color: var(--primary-grey);
+    z-index: -1;
+}
+
 .spacer {
     flex: 1;
 }
@@ -96,7 +131,7 @@ nav > .main-nav > h1 {
     font: inherit;
     font-size: 1.8em;
     margin: 0;
-    margin-bottom: 0.5em;
+    margin-bottom: 0.1em;
     padding-left: 0.5rem;
 }
 
@@ -105,14 +140,22 @@ nav[data-size="top-bar"] > .main-nav > h1 {
 }
 
 nav > .main-nav > .links > a {
-    margin-right: 0.5em;
     color: inherit;
     text-decoration: none;
     position: relative;
-    padding: 0.5rem;
+    /* extra left padding cancels the trailing letter-spacing so the yellow
+       hover box sits symmetrically around the visible text */
+    padding: 0.5rem 0.5em 0.5rem 0.7em;
     font-size: 0.8em;
     transition: var(--hover-speed) color;
     --hover-speed: 0.5s;
+}
+
+/* even text-to-text spacing across Home / Starlings / Travel / Store */
+nav[data-size="top-bar"] > .main-nav > .links {
+    display: flex;
+    align-items: center;
+    gap: 0.9em;
 }
 
 
@@ -209,18 +252,175 @@ nav > .socials button {
 }
 
 
+/* ── Now-playing widget: pill that expands into a connected panel ── */
 nav > .now-playing {
     position: fixed;
     bottom: 0.5em;
     right: 0.5em;
     background-color: var(--primary-grey);
     border-radius: 50vmax;
-    padding: 0.5em 1em;
     font-size: 0.6em;
     display: none;
-    align-items: center;
+    flex-direction: column;
     line-height: 1;
-    gap: 0.5em
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    overflow: hidden;                 /* clip children to the rounded corners */
+}
+
+nav[data-size="full"] > .now-playing {
+    display: flex;
+}
+
+body.cookie-bar-open nav > .now-playing {
+    bottom: calc(0.5em + 68px);
+}
+
+/* the pill row — always visible */
+.np-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.5em 1em;
+}
+
+.np-play-mini img {
+    width: 1.5em;
+    height: 1.5em;
+    display: block;
+}
+
+nav > .now-playing .np-name {
+    color: inherit;
+    /* one font for the whole label so "Now Playing:" and the date sit level
+       (Romens Dawn lacks digits/colon, which caused mixed-font baselines) */
+    font-family: 'Cormorant Garamond', albertus, serif;
+    font-weight: 500;
+    font-size: 1.15em;
+    font-variant-numeric: lining-nums tabular-nums;
+    transition: 0.3s color;
+}
+
+nav > .now-playing .np-name:hover {
+    color: var(--primary-clr);
+}
+
+/* the expanded panel — hidden until the pill is opened */
+.np-panel {
+    display: none;
+    flex-direction: column;
+    gap: 1em;
+    padding: 1.3em 1.3em 1.1em;
+}
+
+nav > .now-playing.expanded {
+    border-radius: 18px;
+    width: 17em;
+}
+
+nav > .now-playing.expanded .np-panel {
+    display: flex;
+}
+
+/* when open, the panel is the whole widget — hide the collapsed pill row */
+nav > .now-playing.expanded .np-pill {
+    display: none;
+}
+
+.np-collapse {
+    align-self: center;
+    color: #fff;
+    opacity: 0.7;
+    line-height: 0;
+    transition: 0.3s opacity;
+}
+
+.np-collapse:hover {
+    opacity: 1;
+}
+
+.np-art img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 10px;
+    display: block;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.5);
+}
+
+.np-art-mystery {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 10px;
+    background-color: #1a1a1a;
+    display: grid;
+    place-content: center;
+    font-size: 4em;
+    color: rgba(255, 255, 255, 0.55);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.5);
+}
+
+.np-track {
+    text-align: left;
+}
+
+.np-title {
+    display: block;
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.3em;
+    line-height: 1.25;
+    transition: 0.3s color;
+}
+
+.np-title:hover {
+    color: var(--primary-clr);
+}
+
+.np-artist {
+    display: block;
+    font-size: 1em;
+    opacity: 0.6;
+    margin-top: 0.3em;
+}
+
+.np-progress {
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.18);
+    overflow: hidden;
+}
+
+.np-fill {
+    display: block;
+    height: 100%;
+    width: 0;
+    background: #fff;
+}
+
+.np-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.7em;
+    margin-top: 0.2em;
+}
+
+.np-ctrl {
+    color: #fff;
+    line-height: 0;
+    opacity: 0.9;
+    transition: 0.2s color, 0.2s opacity;
+}
+
+.np-ctrl:hover {
+    opacity: 1;
+    color: var(--primary-clr);
+}
+
+.np-big img {
+    width: 2.4em;
+    height: 2.4em;
+    display: block;
 }
 
 nav[data-size="full"] > .now-playing {
@@ -316,13 +516,15 @@ nav[data-size="full"] > .nav-store {
     position: absolute;
     top: 0;
     right: 0;
-    padding: 0.5em;
+    height: 72px;            /* level with the social icons in the band */
+    padding: 0 1em;
 }
 
 nav[data-size="top-bar"] > .nav-store {
     display: block;
     align-self: center;
     padding: 0;
+    margin-left: 0.9em;      /* match the gap between the other nav links */
 }
 
 nav[data-size="top-bar"] > .main-nav {
@@ -333,7 +535,7 @@ nav > .nav-store > a {
     color: inherit;
     text-decoration: none;
     position: relative;
-    padding: 0.5rem;
+    padding: 0.5rem 0.5em 0.5rem 0.7em;   /* same box centering as the links */
     font-size: 0.8em;
     transition: 0.5s color;
 }
@@ -381,6 +583,132 @@ nav > .nav-store > a.selected {
 
 .signup-banner-text:hover {
     color: var(--primary-clr);
+}
+
+/* ── Cookie bar (Grinderman-style: white, Caslon serif) ─────── */
+.cookie-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 30;
+    background-color: #ffffff;
+    color: #111;
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+    font-family: 'Libre Caslon Text', Baskerville, Georgia, serif;
+    letter-spacing: normal;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2.5vw;
+    padding: 0.5em 3vw;
+    box-sizing: border-box;
+}
+
+/* author display:flex would defeat the hidden attribute — restore it */
+.cookie-bar[hidden] {
+    display: none;
+}
+
+/* single-line copy, everything sharing one text baseline */
+.cookie-copy {
+    max-width: 46em;
+    display: flex;
+    align-items: baseline;
+    gap: 1.1em;
+    flex-wrap: wrap;
+}
+
+.cookie-copy h3 {
+    font: inherit;
+    font-size: 0.72em;
+    margin: 0;
+}
+
+.cookie-copy p {
+    font-size: 0.68em;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.cookie-details {
+    flex-basis: 100%;    /* expanded details drop to their own row */
+}
+
+.cookie-link {
+    font-family: inherit;
+    font-size: 0.55em;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: #111;
+    padding: 0;
+}
+
+.cookie-link span {
+    font-size: 1.4em;
+    line-height: 0;
+    vertical-align: -0.08em;
+}
+
+.cookie-details p {
+    font-size: 0.66em;
+    color: rgba(0, 0, 0, 0.65);
+    margin: 0.6em 0 0.4em;
+}
+
+.cookie-choices label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    font-size: 0.68em;
+    margin-right: 1.6em;
+}
+
+.cookie-actions {
+    display: flex;
+    gap: 0.6em;
+    flex-shrink: 0;
+}
+
+.cookie-actions button {
+    font-family: inherit;
+    font-size: 0.5em;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    padding: 0.9em 0;
+    width: 16em;
+    text-align: center;
+    transition: 0.25s opacity;
+}
+
+.cookie-actions button:hover {
+    opacity: 0.75;
+}
+
+.cookie-actions button span {
+    font-size: 1.4em;
+    line-height: 0;
+    vertical-align: -0.08em;
+}
+
+.cookie-allow {
+    background-color: #111;
+    color: #fff;
+    border: 1px solid #111;
+}
+
+.cookie-customize {
+    background-color: #fff;
+    color: #111;
+    border: 1px solid #111;
+}
+
+@media (max-width: 800px) {
+    .cookie-bar {
+        flex-direction: column;
+        gap: 0.9em;
+        align-items: flex-start;
+    }
 }
 
 

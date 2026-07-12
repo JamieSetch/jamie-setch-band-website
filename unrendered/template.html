@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jamie Setch</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&family=Cormorant+Garamond:wght@400;500&display=swap" rel="stylesheet">
     {{MAIN_CSS}}
 </head>
 <body>
@@ -30,11 +33,35 @@
             <div class="nav-store">
                 <a href="/store" data-navid="store" class="nav-link">Store</a>
             </div>
-            <div class="now-playing hidden">
-                <button onclick="site.toggleMusic()">
-                    <img src="/assets/icons/play.svg" alt="">
-                </button>
-                <span>Now playing - {{SONG_NAME}}</span>
+            <div class="now-playing hidden" id="now-playing">
+                <div class="np-panel">
+                    <button class="np-collapse" id="np-collapse" type="button" aria-label="Minimise">
+                        <svg viewBox="0 0 20 12" width="20" height="12"><polyline points="3,3 10,9 17,3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                    <!-- artwork kept secret until release -->
+                    <div class="np-art np-art-mystery">?</div>
+                    <div class="np-track">
+                        <a class="np-title" href="{{SPOTIFY_LINK}}" target="_blank" rel="noopener">{{SONG_NAME}}</a>
+                    </div>
+                    <div class="np-progress"><span class="np-fill" id="np-fill"></span></div>
+                    <div class="np-controls">
+                        <button class="np-ctrl" id="np-prev" type="button" aria-label="Restart">
+                            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+                        </button>
+                        <button class="np-ctrl np-big" id="np-play-big" type="button" onclick="site.toggleMusic()" aria-label="Play/pause">
+                            <img src="/assets/icons/play.svg" alt="">
+                        </button>
+                        <button class="np-ctrl" id="np-next" type="button" aria-label="Skip">
+                            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M16 6h2v12h-2zm-2 6L5.5 6v12z"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="np-pill">
+                    <button class="np-play-mini" onclick="site.toggleMusic()" aria-label="Play/pause">
+                        <img src="/assets/icons/play.svg" alt="">
+                    </button>
+                    <button class="np-name" id="np-name" type="button"><span>Now Playing: {{SONG_NAME}}</span></button>
+                </div>
                 <audio src="{{SONG_FILE}}" class="hidden" volume="SONG_VOLUME"></audio>
             </div>
         </nav>
@@ -66,6 +93,82 @@
         ml('account', '1190565');
     </script>
     <!-- End MailerLite Universal -->
+
+    <div class="cookie-bar" id="cookie-bar" hidden>
+        <div class="cookie-copy">
+            <h3>Cookie Notice</h3>
+            <p>We use cookies to personalise ads and to analyse our traffic.</p>
+            <button class="cookie-link" id="cookie-details-toggle" type="button">Show details <span>&rsaquo;</span></button>
+            <div class="cookie-details" id="cookie-details" hidden>
+                <p>Analytics cookies help us understand how visitors use the site. Advertising cookies let us and our partners show you more relevant ads.</p>
+                <div class="cookie-choices" id="cookie-choices" hidden>
+                    <label><input type="checkbox" id="ck-analytics" checked> Analytics</label>
+                    <label><input type="checkbox" id="ck-ads" checked> Personalised ads</label>
+                </div>
+            </div>
+        </div>
+        <div class="cookie-actions">
+            <button class="cookie-allow" id="cookie-allow" type="button">Allow cookies</button>
+            <button class="cookie-customize" id="cookie-customize" type="button">Customize <span>&rsaquo;</span></button>
+        </div>
+    </div>
+    <script>
+    (function () {
+        var KEY = 'js-cookie-choice';
+        var bar = document.getElementById('cookie-bar');
+        try { if (localStorage.getItem(KEY)) return; } catch (e) {}
+        bar.hidden = false;
+        document.body.classList.add('cookie-bar-open');   // lifts the now-playing pill
+        var details = document.getElementById('cookie-details');
+        var choices = document.getElementById('cookie-choices');
+        var customize = document.getElementById('cookie-customize');
+        document.getElementById('cookie-details-toggle').addEventListener('click', function () {
+            details.hidden = !details.hidden;
+        });
+        function close(choice) {
+            try { localStorage.setItem(KEY, JSON.stringify(choice)); } catch (e) {}
+            bar.hidden = true;
+            document.body.classList.remove('cookie-bar-open');
+        }
+        document.getElementById('cookie-allow').addEventListener('click', function () {
+            close({ analytics: true, ads: true });
+        });
+        customize.addEventListener('click', function () {
+            if (choices.hidden) {              // first click: reveal the choices
+                details.hidden = false;
+                choices.hidden = false;
+                customize.innerHTML = 'Save preferences <span>&rsaquo;</span>';
+            } else {                           // second click: save them
+                close({
+                    analytics: document.getElementById('ck-analytics').checked,
+                    ads: document.getElementById('ck-ads').checked
+                });
+            }
+        });
+    })();
+    </script>
+
+    <script>
+    (function () {
+        // now-playing pill: clicking the song name expands the connected
+        // Apple-Music-style panel; the chevron collapses it back to the pill.
+        var np = document.getElementById('now-playing');
+        document.getElementById('np-name').addEventListener('click', function () {
+            np.classList.add('expanded');
+        });
+        document.getElementById('np-collapse').addEventListener('click', function () {
+            np.classList.remove('expanded');
+        });
+        // progress bar reflects the audio position
+        var audio = np.querySelector('audio');
+        var fill = document.getElementById('np-fill');
+        audio.addEventListener('timeupdate', function () {
+            if (audio.duration) fill.style.width = (audio.currentTime / audio.duration * 100) + '%';
+        });
+        document.getElementById('np-prev').addEventListener('click', function () { audio.currentTime = 0; });
+        document.getElementById('np-next').addEventListener('click', function () { audio.currentTime = 0; });
+    })();
+    </script>
 
     <div class="signup-banner" id="signup-banner" onclick="site.navigateTo('sign-up')">
         <canvas id="murmuration" class="murmuration"></canvas>
@@ -107,7 +210,7 @@
         function spawn(b) {
             // Starts near the centre (p≈0) and flies outward toward its edge (p→1).
             b.p  = 0;
-            b.speed = 0.0012 + Math.random() * 0.0013;   // very slow, drifting
+            b.speed = 0.0008 + Math.random() * 0.0009;   // very slow, drifting
             b.jx = (Math.random() - 0.5) * 26;            // little cloud around the origin
             b.jy = (Math.random() - 0.5) * 14;
             b.oy = (Math.random() - 0.5);                 // vertical fan as it travels
@@ -184,8 +287,19 @@
             var el = document.querySelector('.page:not(.hidden)');
             return el ? el.id : '';
         }
+        // Instagram points at the band account on the Starlings page,
+        // and at Jamie's personal account everywhere else.
+        var IG_DEFAULT = 'https://www.instagram.com/jamie_setch/';
+        var IG_STARLINGS = 'https://www.instagram.com/starrrlings/';
+        function updateInstagram(page) {
+            var href = (page === 'music') ? IG_STARLINGS : IG_DEFAULT;
+            document.querySelectorAll('a[href*="instagram.com"]').forEach(function (a) {
+                a.href = href;
+            });
+        }
         function updateBanner() {
-            var cfg = BANNER_PAGES[visiblePageId()];
+            var page = visiblePageId();
+            var cfg = BANNER_PAGES[page];
             if (cfg) {
                 bannerText.textContent = cfg.text;
                 canvas.style.display = (cfg.canvas === 'murmuration') ? '' : 'none';
@@ -194,6 +308,13 @@
             } else {
                 banner.style.transform = 'translateY(100%)';
             }
+            updateInstagram(page);
+            // Starlings page is locked to the viewport — hide the scrollbar
+            document.documentElement.classList.toggle('no-page-scroll', page === 'music');
+            // Store scrolls, but hide its scrollbar
+            document.documentElement.classList.toggle('hide-scrollbar', page === 'store');
+            // the Starlings page carries the band name
+            document.title = (page === 'music') ? 'Jamie Setch and the Starlings' : 'Jamie Setch';
         }
         var mo = new MutationObserver(updateBanner);
         document.querySelectorAll('.page').forEach(function (p) {
