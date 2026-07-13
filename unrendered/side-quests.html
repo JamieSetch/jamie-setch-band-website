@@ -379,7 +379,9 @@
                             img.setAttribute('href', '/assets/flags/' + q.flag + '.svg');
                             img.setAttribute('width', bb.width);
                             img.setAttribute('height', bb.height);
-                            img.setAttribute('preserveAspectRatio', 'xMidYMid slice');
+                            // 'none' stretches the whole flag to fill the country's
+                            // mainland exactly (no cropping), so it fills the landmass
+                            img.setAttribute('preserveAspectRatio', 'none');
                             pat.appendChild(img);
                             defs.appendChild(pat);
                             fill = 'url(#' + pid + ')';
