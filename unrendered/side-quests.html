@@ -367,18 +367,24 @@
                             // territories (French Guiana, Dutch Caribbean, the
                             // Azores…) blow the bbox up and stretch the flag.
                             var bb = mainlandBBox(els[0]);
+                            // grow the tile a touch so the flag over-covers the
+                            // country and the coastline clips it — otherwise a
+                            // rounding gap can leave the top edge uncovered
+                            var mx = bb.width * 0.06, my = bb.height * 0.06;
+                            var bx = bb.x - mx, by = bb.y - my;
+                            var bw = bb.width + 2 * mx, bh = bb.height + 2 * my;
                             var pid = 'flag-' + q.flag + '-' + i;
                             var pat = document.createElementNS(SVGNS, 'pattern');
                             pat.setAttribute('id', pid);
                             pat.setAttribute('patternUnits', 'userSpaceOnUse');
-                            pat.setAttribute('x', bb.x);
-                            pat.setAttribute('y', bb.y);
-                            pat.setAttribute('width', bb.width);
-                            pat.setAttribute('height', bb.height);
+                            pat.setAttribute('x', bx);
+                            pat.setAttribute('y', by);
+                            pat.setAttribute('width', bw);
+                            pat.setAttribute('height', bh);
                             var img = document.createElementNS(SVGNS, 'image');
                             img.setAttribute('href', '/assets/flags/' + q.flag + '.svg');
-                            img.setAttribute('width', bb.width);
-                            img.setAttribute('height', bb.height);
+                            img.setAttribute('width', bw);
+                            img.setAttribute('height', bh);
                             // 'none' stretches the whole flag to fill the country's
                             // mainland exactly (no cropping), so it fills the landmass
                             img.setAttribute('preserveAspectRatio', 'none');

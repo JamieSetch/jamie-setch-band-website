@@ -32,6 +32,6 @@
     {
         "id": "sign-up",
         "name": "Sign Up",
-        "show-nav": "none"
+        "show-nav": "top-bar"
     }
 ]

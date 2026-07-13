@@ -1,7 +1,7 @@
 
 
 #sign-up {
-    min-height: 100vh;
+    min-height: calc(100vh - 72px);   /* sit below the top bar */
     background-image: url('assets/email-cover.webp');
     background-size: cover;
     background-position: bottom center;
@@ -39,12 +39,20 @@
     font-size: 0.8em;
 }
 
-#sign-up > button {
+.signup-back {
     position: absolute;
-    top: 1em;
-    left: 1em;
+    top: 1.2em;
+    left: 1.4em;
     color: white;
+    text-decoration: none;
     text-transform: uppercase;
-    --hover-speed: 0.5s;
-    padding: 0.3em 0.6em;
+    letter-spacing: 0.15em;
+    font-size: 0.7em;
+    cursor: pointer;
+    z-index: 1;
+    transition: 0.3s color;
+}
+
+.signup-back:hover {
+    color: var(--primary-clr);
 }

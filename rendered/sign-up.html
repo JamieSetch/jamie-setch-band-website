@@ -1444,7 +1444,7 @@ nav > .nav-store > a.selected {
 
 
 #sign-up {
-    min-height: 100vh;
+    min-height: calc(100vh - 72px);   /* sit below the top bar */
     background-image: url('assets/email-cover.webp');
     background-size: cover;
     background-position: bottom center;
@@ -1482,14 +1482,22 @@ nav > .nav-store > a.selected {
     font-size: 0.8em;
 }
 
-#sign-up > button {
+.signup-back {
     position: absolute;
-    top: 1em;
-    left: 1em;
+    top: 1.2em;
+    left: 1.4em;
     color: white;
+    text-decoration: none;
     text-transform: uppercase;
-    --hover-speed: 0.5s;
-    padding: 0.3em 0.6em;
+    letter-spacing: 0.15em;
+    font-size: 0.7em;
+    cursor: pointer;
+    z-index: 1;
+    transition: 0.3s color;
+}
+
+.signup-back:hover {
+    color: var(--primary-clr);
 }#side-quests {
     /* fills the viewport below the nav — height set by script (--sq-h) */
     position: relative;
@@ -2155,7 +2163,7 @@ body.reader-open { overflow: hidden; }
 </head>
 <body>
     <main>
-        <nav data-size="none">
+        <nav data-size="top-bar">
             <div class="socials">
                 <button class="side-nav-button" onclick="site.toggleSideNav()">
                     <img src="assets/icons/menu.svg" alt="">
@@ -2876,18 +2884,24 @@ body.reader-open { overflow: hidden; }
                             // territories (French Guiana, Dutch Caribbean, the
                             // Azores…) blow the bbox up and stretch the flag.
                             var bb = mainlandBBox(els[0]);
+                            // grow the tile a touch so the flag over-covers the
+                            // country and the coastline clips it — otherwise a
+                            // rounding gap can leave the top edge uncovered
+                            var mx = bb.width * 0.06, my = bb.height * 0.06;
+                            var bx = bb.x - mx, by = bb.y - my;
+                            var bw = bb.width + 2 * mx, bh = bb.height + 2 * my;
                             var pid = 'flag-' + q.flag + '-' + i;
                             var pat = document.createElementNS(SVGNS, 'pattern');
                             pat.setAttribute('id', pid);
                             pat.setAttribute('patternUnits', 'userSpaceOnUse');
-                            pat.setAttribute('x', bb.x);
-                            pat.setAttribute('y', bb.y);
-                            pat.setAttribute('width', bb.width);
-                            pat.setAttribute('height', bb.height);
+                            pat.setAttribute('x', bx);
+                            pat.setAttribute('y', by);
+                            pat.setAttribute('width', bw);
+                            pat.setAttribute('height', bh);
                             var img = document.createElementNS(SVGNS, 'image');
                             img.setAttribute('href', '/assets/flags/' + q.flag + '.svg');
-                            img.setAttribute('width', bb.width);
-                            img.setAttribute('height', bb.height);
+                            img.setAttribute('width', bw);
+                            img.setAttribute('height', bh);
                             // 'none' stretches the whole flag to fill the country's
                             // mainland exactly (no cropping), so it fills the landmass
                             img.setAttribute('preserveAspectRatio', 'none');
@@ -3136,16 +3150,14 @@ body.reader-open { overflow: hidden; }
     })();
     </script>
 </div>
-<div class="  page" data-nav="none" id="sign-up">
+<div class="  page" data-nav="top-bar" id="sign-up">
+    <a class="signup-back nav-link" data-navid="home" onclick="site.navigateTo('home')">&larr; Back Home</a>
     <div>
         <h2>Newsletter Sign Up</h2>
         <div>Sign up for exclusive information from Jamie Setch</div>
         <div>This will be the official source from now on</div>
         <div class="ml-embedded" data-form="ZiAdeP"></div>
     </div>
-    <button onclick="site.goBack()">
-        Back
-    </button>
 </div>
     </main>
 
