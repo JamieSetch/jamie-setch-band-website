@@ -67,8 +67,16 @@ function toggleMusic() {
 document.querySelector('.now-playing audio').volume = 0.1
 
 
+function openSignup() {
+    // the two banners lead to different sign-up pages
+    const current = document.querySelector('.page:not(.hidden)')
+    const page = current ? current.id : ''
+    navigateTo(page === 'music' ? 'starling-signup' : 'sign-up')
+}
+
 window.site = {}
 window.site.navigateTo = navigateTo
+window.site.openSignup = openSignup
 window.site.toggleSideNav = toggleSideNav
 window.site.goBack = goBack
 window.site.pauseMusic = pauseMusic

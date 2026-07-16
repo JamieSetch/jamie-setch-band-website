@@ -161,7 +161,7 @@ nav[data-size="top-bar"] > .main-nav > .links {
 
 nav > .main-nav > .links > a:hover,
 nav > .main-nav > .links > a.selected,
-#sign-up > button:hover {
+#sign-up .signup-back:hover {
     color: var(--primary-clr);
 }
 
@@ -169,8 +169,8 @@ nav > .main-nav > .links > a::before,
 nav > .main-nav > .links > a::after,
 nav > .nav-store > a::before,
 nav > .nav-store > a::after,
-#sign-up > button::before,
-#sign-up > button::after {
+#sign-up .signup-back::before,
+#sign-up .signup-back::after {
     content: "";
     position: absolute;
     transition: var(--hover-speed) all;
@@ -182,7 +182,7 @@ nav > .nav-store > a::after,
 
 nav > .main-nav > .links > a::before,
 nav > .nav-store > a::before,
-#sign-up > button::before {
+#sign-up .signup-back::before {
     top: 0;
     left: 0;
     border-left: 1px solid var(--primary-clr-transparent);
@@ -191,7 +191,7 @@ nav > .nav-store > a::before,
 
 nav > .main-nav > .links > a::after,
 nav > .nav-store > a::after,
-#sign-up > button::after {
+#sign-up .signup-back::after {
     bottom: 0;
     right: 0;
     border-right: 1px solid var(--primary-clr-transparent);
@@ -203,8 +203,8 @@ nav > .main-nav > .links > a:hover::before,
 nav > .main-nav > .links > a:hover::after,
 nav > .nav-store > a:hover::before,
 nav > .nav-store > a:hover::after,
-#sign-up > button:hover::before,
-#sign-up > button:hover::after {
+#sign-up .signup-back:hover::before,
+#sign-up .signup-back:hover::after {
     width: 100%;
     height: 100%;
     opacity: 1;

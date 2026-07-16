@@ -33,5 +33,10 @@
         "id": "sign-up",
         "name": "Sign Up",
         "show-nav": "top-bar"
+    },
+    {
+        "id": "starling-signup",
+        "name": "Become a Starling",
+        "show-nav": "none"
     }
 ]

@@ -41,13 +41,14 @@
 
 .signup-back {
     position: absolute;
-    top: 1.2em;
-    left: 1.4em;
+    top: 1em;
+    left: 1em;
     color: white;
     text-decoration: none;
     text-transform: uppercase;
     letter-spacing: 0.15em;
     font-size: 0.7em;
+    padding: 0.5em 0.7em;
     cursor: pointer;
     z-index: 1;
     transition: 0.3s color;
@@ -55,4 +56,106 @@
 
 .signup-back:hover {
     color: var(--primary-clr);
+}
+
+/* ── Starlings sign-up (popup box over the doodle pattern) ──── */
+#starling-signup {
+    --mono: "Courier New", ui-monospace, monospace;
+    min-height: 100vh;
+    box-sizing: border-box;
+    background-color: #ffffff;
+    background-image: url('/assets/starlings-signup-bg.png');
+    background-repeat: repeat;
+    background-size: 340px auto;
+    display: grid;
+    place-content: center;
+    padding: 2em;
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+.ss-card {
+    position: relative;
+    width: min(680px, 92vw);
+    box-sizing: border-box;
+    background: #ffffff;
+    color: var(--primary-grey);
+    padding: 2.6em 2.6em 2.8em;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    text-align: center;
+}
+
+.ss-close {
+    position: absolute;
+    top: 0.7em;
+    right: 0.9em;
+    font-size: 1.7em;
+    line-height: 1;
+    color: var(--primary-grey);
+    opacity: 0.7;
+    transition: 0.25s opacity;
+}
+
+.ss-close:hover {
+    opacity: 1;
+}
+
+.ss-card h3 {
+    font-family: var(--mono);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 1.15em;
+    letter-spacing: 0.12em;
+    line-height: 1.5;
+    margin: 0 0 0.8em;
+}
+
+.ss-card p {
+    font-family: var(--mono);
+    font-size: 0.75em;
+    letter-spacing: 0.03em;
+    line-height: 1.6;
+    color: rgba(46, 46, 46, 0.8);
+    margin: 0 auto 1.6em;
+    max-width: 34em;
+}
+
+.ss-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9em;
+    max-width: 32em;
+    margin: 0 auto;
+}
+
+.ss-input {
+    border: 1px solid rgba(46, 46, 46, 0.4);
+    background: #fff;
+    padding: 1.05em 1.1em;
+    font-family: var(--mono);
+    font-size: 0.78em;
+    letter-spacing: 0.04em;
+    color: var(--primary-grey);
+}
+
+.ss-input:focus {
+    outline: none;
+    border-color: var(--primary-grey);
+}
+
+.ss-subscribe {
+    background: var(--primary-grey);
+    color: #fff;
+    border: none;
+    padding: 1.15em;
+    font-family: var(--mono);
+    font-size: 0.72em;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    cursor: pointer;
+    transition: 0.25s background;
+}
+
+.ss-subscribe:hover {
+    background: #000;
 }
