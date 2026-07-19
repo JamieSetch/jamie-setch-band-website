@@ -7,6 +7,20 @@ function navigateTo(page) {
     }
     const next = document.querySelector('#' + page)
     next.classList.remove('hidden')
+
+    // reset the Starlings signup card to its form state whenever it's opened
+    if (page === 'starling-signup') {
+        const card = next.querySelector('.ss-card')
+        if (card) {
+            const body = card.querySelector('.ss-body')
+            const success = card.querySelector('.ss-success')
+            const email = card.querySelector('input[type="email"]')
+            if (body) body.classList.remove('hidden')
+            if (success) success.classList.add('hidden')
+            if (email) email.value = ''
+        }
+    }
+
     document.querySelector('nav').dataset.size = next.dataset.nav
     closeSideNav()
     history.pushState('hi', "", page);
@@ -74,9 +88,50 @@ function openSignup() {
     navigateTo(page === 'music' ? 'starling-signup' : 'sign-up')
 }
 
+// Wire the custom-styled Starlings popup to MailerLite (same list/form as the
+// Side Quests newsletter embed, form 138280975950939531 on account 1190565).
+// The request is POSTed into a hidden iframe so it goes cross-origin without
+// CORS and without navigating the page — the same POST MailerLite's own form
+// makes. The iframe response is cross-origin/unreadable, so success is shown
+// optimistically.
+function subscribeStarling(form) {
+    const input = form.querySelector('input[type="email"]')
+    const email = (input.value || '').trim()
+    if (!email) return false
+
+    let sink = document.getElementById('ml-sink')
+    if (!sink) {
+        sink = document.createElement('iframe')
+        sink.id = 'ml-sink'
+        sink.name = 'ml-sink'
+        sink.style.display = 'none'
+        document.body.appendChild(sink)
+    }
+
+    const post = document.createElement('form')
+    post.action = 'https://assets.mailerlite.com/jsonp/1190565/forms/138280975950939531/subscribe'
+    post.method = 'post'
+    post.target = 'ml-sink'
+    post.style.display = 'none'
+    post.innerHTML =
+        '<input type="email" name="fields[email]">' +
+        '<input type="hidden" name="ml-submit" value="1">' +
+        '<input type="hidden" name="anticsrf" value="true">'
+    post.querySelector('input[type="email"]').value = email
+    document.body.appendChild(post)
+    post.submit()
+    setTimeout(() => post.remove(), 0)
+
+    const card = form.closest('.ss-card')
+    card.querySelector('.ss-body').classList.add('hidden')
+    card.querySelector('.ss-success').classList.remove('hidden')
+    return false
+}
+
 window.site = {}
 window.site.navigateTo = navigateTo
 window.site.openSignup = openSignup
+window.site.subscribeStarling = subscribeStarling
 window.site.toggleSideNav = toggleSideNav
 window.site.goBack = goBack
 window.site.pauseMusic = pauseMusic

@@ -8,9 +8,9 @@
     box-sizing: border-box;
     /* full-page seamless doodle pattern, full black-and-white contrast */
     background-color: #ffffff;
-    background-image: url('/assets/starlings-bg.png');
+    background-image: url('/assets/starlings-signup-bg.png');
     background-repeat: repeat;
-    background-size: 320px auto;
+    background-size: 460px auto;
     color: var(--primary-grey);
 }
 
@@ -64,18 +64,41 @@
     height: calc(100vh - 216px);   /* viewport minus nav + countdown + bottom banner */
     min-height: 300px;
     flex-shrink: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    /* grid (not flex) so the aspect-ratio video frame can derive its width from
+       its definite height — flex items fall back to content width and collapse */
+    display: grid;
+    place-items: center;
     padding: 2em 3em;
     box-sizing: border-box;
 }
 
-/* YouTube-style placeholder player (not wired to anything yet) */
-.yt-frame {
-    height: 100%;
+/* clean white frame so the video has a calm zone over the busy pattern.
+   The frame itself carries the 16:9 ratio, derived from its definite height,
+   so its width is unambiguous. Safari collapses an aspect-ratio box whose
+   width is derived through a percentage-height child inside an auto-width
+   flex parent (and has extra quirks with aspect-ratio on <button>) — that
+   combination produced the tall narrow strip. Sizing the frame directly and
+   letting the button just fill it avoids both. */
+.video-frame {
+    /* Fit within the hero by whichever dimension binds: min() picks full width
+       on tall/narrow viewports, or the width a 16:9 box needs to fit the
+       available height on wide ones. aspect-ratio then sets the height. All
+       definite lengths, so Chromium and Safari agree and nothing collapses.
+       The 216px / 4em mirror the hero's height calc and its 2em vertical
+       padding; max(300px, …) tracks the hero's min-height. */
+    width: min(100%, calc((max(300px, 100vh - 216px) - 4em) * 16 / 9));
     aspect-ratio: 16 / 9;
-    max-width: 100%;
+    box-sizing: border-box;
+    padding: clamp(1.4em, 4vh, 3em);
+    background: #ffffff;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.16);
+}
+
+/* YouTube-style placeholder player (not wired to anything yet) —
+   fills the framed area rather than deriving its own size */
+.yt-frame {
+    width: 100%;
+    height: 100%;
     background-color: #000;
     border: none;
     padding: 0;
