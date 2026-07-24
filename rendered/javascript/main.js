@@ -87,7 +87,7 @@ function openSignup() {
     const page = current ? current.id : ''
     if (page === 'side-quests') {
         // Travel "Join an Adventure" banner → external adventures site
-        window.open('https://www.seehimal.com', '_blank', 'noopener')
+        window.open('https://seehimal.com', '_blank', 'noopener')
         return
     }
     navigateTo(page === 'music' ? 'starling-signup' : 'sign-up')
