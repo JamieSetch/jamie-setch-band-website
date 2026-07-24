@@ -82,9 +82,14 @@ document.querySelector('.now-playing audio').volume = 0.1
 
 
 function openSignup() {
-    // the two banners lead to different sign-up pages
+    // the bottom banner behaves differently per page
     const current = document.querySelector('.page:not(.hidden)')
     const page = current ? current.id : ''
+    if (page === 'side-quests') {
+        // Travel "Join an Adventure" banner → external adventures site
+        window.open('https://www.seehimal.com', '_blank', 'noopener')
+        return
+    }
     navigateTo(page === 'music' ? 'starling-signup' : 'sign-up')
 }
 
