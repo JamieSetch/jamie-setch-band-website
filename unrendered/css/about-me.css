@@ -1,0 +1,85 @@
+/* ── About Me — long-form bio, clean readable column ─────────── */
+#about-me {
+    min-height: calc(100vh - 74px);   /* sit below the top bar */
+    box-sizing: border-box;
+    background-color: var(--primary-grey);
+    color: var(--primary-white);
+    padding: 4em 1.5em 5em;
+    display: flex;
+    justify-content: center;
+}
+
+.about-wrap {
+    width: 100%;
+    max-width: 720px;
+}
+
+.about-wrap h2 {
+    font-family: 'romens-dawn', albertus, serif;
+    font-size: 1.7em;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin: 0 0 0.7em;
+}
+
+.about-wrap h3 {
+    font-family: 'romens-dawn', albertus, serif;
+    font-size: 1.15em;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin: 2em 0 0.6em;
+    color: var(--primary-white);
+}
+
+/* yellow lead-in line */
+.about-intro {
+    font-family: albertus, Georgia, serif;
+    font-size: 0.95em;
+    letter-spacing: 0.02em;
+    line-height: 1.7;
+    color: var(--primary-clr);
+    margin: 0 0 1.6em;
+}
+
+.about-wrap p {
+    font-family: albertus, Georgia, serif;
+    font-size: 0.8em;
+    letter-spacing: 0.02em;
+    line-height: 1.85;
+    margin: 0 0 1.25em;
+    color: rgba(251, 248, 245, 0.85);
+}
+
+.about-wrap a {
+    color: var(--primary-clr);
+    text-decoration: none;
+    border-bottom: 1px solid var(--primary-clr-transparent);
+    transition: border-color 0.2s;
+}
+
+.about-wrap a:hover {
+    border-bottom-color: var(--primary-clr);
+}
+
+.about-socials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.6em;
+    margin-top: 2.2em;
+    font-family: albertus, Georgia, serif;
+    font-size: 0.72em;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+
+.about-socials a {
+    border-bottom: none;
+    color: var(--primary-white);
+    opacity: 0.75;
+    transition: opacity 0.2s, color 0.2s;
+}
+
+.about-socials a:hover {
+    opacity: 1;
+    color: var(--primary-clr);
+}
