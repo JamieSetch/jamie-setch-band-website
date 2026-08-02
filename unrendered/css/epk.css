@@ -67,6 +67,12 @@
     margin-top: 1.3em;
 }
 
+/* the mission statement — underlined for emphasis */
+.epk-mission {
+    text-decoration: underline;
+    text-underline-offset: 0.22em;
+}
+
 /* clearly-marked scaffold text the artist still needs to fill in */
 .epk-placeholder {
     color: rgba(251, 248, 245, 0.45);
