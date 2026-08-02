@@ -62,6 +62,11 @@
     color: rgba(251, 248, 245, 0.85);
 }
 
+/* space between stacked paragraphs (e.g. the bio's closing line) */
+.epk-section p + p {
+    margin-top: 1.3em;
+}
+
 /* clearly-marked scaffold text the artist still needs to fill in */
 .epk-placeholder {
     color: rgba(251, 248, 245, 0.45);
