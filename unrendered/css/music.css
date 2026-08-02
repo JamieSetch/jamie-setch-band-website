@@ -85,6 +85,7 @@
 /* YouTube-style placeholder player (not wired to anything yet) —
    fills the framed area rather than deriving its own size */
 .yt-frame {
+    position: relative;   /* anchor the coming-soon glass card */
     width: 100%;
     height: 100%;
     background-color: #000;
@@ -93,6 +94,33 @@
     cursor: pointer;
     display: grid;
     place-content: center;
+}
+
+/* liquid-glass "coming soon" card floating over the video */
+.music-soon {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    pointer-events: none;
+    padding: 0.85em 1.9em;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.12);
+    -webkit-backdrop-filter: blur(18px) saturate(180%);
+    backdrop-filter: blur(18px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.40),
+                inset 0 1px 0 rgba(255, 255, 255, 0.55),
+                inset 0 -1px 1px rgba(255, 255, 255, 0.12);
+    color: #fff;
+    font-family: 'romens-dawn', albertus, serif;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    line-height: 1;
+    white-space: nowrap;
+    font-size: clamp(0.95rem, 2.2vw, 1.7rem);
+    text-shadow: 0 2px 14px rgba(0, 0, 0, 0.45);
 }
 
 .yt-play {
