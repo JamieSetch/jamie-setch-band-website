@@ -30,6 +30,11 @@
         "show-nav": "top-bar"
     },
     {
+        "id": "epk",
+        "name": "EPK",
+        "show-nav": "top-bar"
+    },
+    {
         "id": "sign-up",
         "name": "Sign Up",
         "show-nav": "top-bar"

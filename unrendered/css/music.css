@@ -6,11 +6,8 @@
     flex-direction: column;
     padding: 3em;
     box-sizing: border-box;
-    /* full-page seamless doodle pattern, full black-and-white contrast */
+    /* plain background (doodle pattern removed) */
     background-color: #ffffff;
-    background-image: url('/assets/starlings-signup-bg.png');
-    background-repeat: repeat;
-    background-size: 460px auto;
     color: var(--primary-grey);
 }
 

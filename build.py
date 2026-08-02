@@ -93,7 +93,7 @@ def build():
     template = f.read()
     f.close()
 
-    cssFiles = ['nav.css', 'music.css', 'store.css', 'sign-up.css', 'side-quests.css', 'work.css', 'about-me.css']
+    cssFiles = ['nav.css', 'music.css', 'store.css', 'sign-up.css', 'side-quests.css', 'work.css', 'about-me.css', 'epk.css']
 
     css = ''
     for file in cssFiles:
