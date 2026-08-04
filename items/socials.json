@@ -8,15 +8,7 @@
         "link": "https://www.spotify.com"
     },
     {
-        "icon": "assets/socials/youtube-icon1.png",
-        "link": "https://www.youtube.com"
-    },
-    {
         "icon": "assets/socials/instagram.png",
         "link": "https://www.instagram.com/jamiesetch/"
-    },
-    {
-        "icon": "assets/socials/tiktok-256.png",
-        "link": "https://www.tiktok.com/jamie.setch.music"
     }
 ]
