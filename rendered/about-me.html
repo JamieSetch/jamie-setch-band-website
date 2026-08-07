@@ -82,12 +82,12 @@ body.side-nav-open main {
 }
 
 nav {
-    background-image: url('assets/home-bg-v2.webp');
+    background-image: url('assets/home-bg-v3.webp');
     backdrop-filter: brightness(100%);
     background-size: cover;
     background-position: bottom center;
     height: 100vh;
-    height: 100dvh;
+    height: 100lvh;   /* large-viewport height: always fills, no bottom gap (Safari dvh quirk) */
     display: flex;
     flex-direction: column;
     position: relative;
