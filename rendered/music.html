@@ -42,6 +42,13 @@ body.side-nav-open {
     overflow: hidden;
 }
 
+/* Clip horizontal overflow from off-screen fixed+transformed elements (the
+   closed side-nav) — Safari otherwise leaks them into the scroll area and
+   shows a horizontal scrollbar strip at the bottom of the page. */
+html {
+    overflow-x: hidden;
+}
+
 /* Starlings page is locked to the viewport — no scrollbar */
 html.no-page-scroll {
     overflow: hidden;
