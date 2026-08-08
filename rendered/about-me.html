@@ -771,6 +771,14 @@ nav[data-size="full"] .hero-ring {
     display: block;
 }
 
+/* Phone: shrink the ring so it doesn't compete with the wordmark */
+@media (max-width: 800px) {
+    .hero-ring {
+        width: 56px;
+        height: 44px;
+    }
+}
+
 /* the ring replaces the play/pause player — hide the now-playing pill/panel
    (the <audio> inside still plays; the ring drives it) */
 .now-playing {
