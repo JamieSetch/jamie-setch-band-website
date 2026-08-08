@@ -6,9 +6,12 @@
     flex-direction: column;
     padding: 3em;
     box-sizing: border-box;
-    /* plain background (doodle pattern removed) */
-    background-color: #ffffff;
-    color: var(--primary-grey);
+    /* desert hero background (matches the homepage) */
+    background-color: var(--primary-grey);
+    background-image: url('/assets/home-bg-v5.webp');
+    background-size: cover;
+    background-position: bottom center;
+    color: var(--primary-white);
 }
 
 /* ── Countdown bar (sits directly below the nav) ────────────── */

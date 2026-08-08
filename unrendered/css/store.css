@@ -14,9 +14,9 @@
     margin: 0 calc(-1 * clamp(1.5em, 4vw, 4em));
     height: 56vh;
     min-height: 300px;
-    background-image: url('/assets/cover.webp');
+    background-image: url('/assets/home-bg-v5.webp');
     background-size: cover;
-    background-position: center 68%;
+    background-position: bottom center;
 }
 
 /* ── Header row (above the hero): breadcrumb left, brand centred ── */

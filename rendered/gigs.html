@@ -783,9 +783,12 @@ nav[data-size="full"] .hero-ring {
     flex-direction: column;
     padding: 3em;
     box-sizing: border-box;
-    /* plain background (doodle pattern removed) */
-    background-color: #ffffff;
-    color: var(--primary-grey);
+    /* desert hero background (matches the homepage) */
+    background-color: var(--primary-grey);
+    background-image: url('/assets/home-bg-v5.webp');
+    background-size: cover;
+    background-position: bottom center;
+    color: var(--primary-white);
 }
 
 /* ── Countdown bar (sits directly below the nav) ────────────── */
@@ -1107,9 +1110,9 @@ nav[data-size="full"] .hero-ring {
     margin: 0 calc(-1 * clamp(1.5em, 4vw, 4em));
     height: 56vh;
     min-height: 300px;
-    background-image: url('/assets/cover.webp');
+    background-image: url('/assets/home-bg-v5.webp');
     background-size: cover;
-    background-position: center 68%;
+    background-position: bottom center;
 }
 
 /* ── Header row (above the hero): breadcrumb left, brand centred ── */
@@ -1593,10 +1596,10 @@ nav[data-size="full"] .hero-ring {
     --mono: "Courier New", ui-monospace, monospace;
     min-height: 100vh;
     box-sizing: border-box;
-    background-color: #ffffff;
-    background-image: url('/assets/starlings-signup-bg.png');
-    background-repeat: repeat;
-    background-size: 460px auto;   /* match the Music page pattern scale */
+    background-color: var(--primary-grey);
+    background-image: url('/assets/home-bg-v5.webp');
+    background-size: cover;
+    background-position: bottom center;
     display: grid;
     place-content: center;
     padding: 2em;
@@ -2578,80 +2581,115 @@ body.reader-open { overflow: hidden; }
     color: var(--primary-clr);
     border-bottom-color: var(--primary-clr);
 }
-/* ── Gigs — centred, poster/leaflet-style list of upcoming shows ─── */
+/* ── Gigs — a bold poster/rectangle in the foreground over the desert ── */
 #gigs {
     min-height: calc(100vh - 74px);
     box-sizing: border-box;
+    /* desert hero background matches the homepage */
     background-color: var(--primary-grey);
-    color: var(--primary-white);
+    background-image: url('/assets/home-bg-v5.webp');
+    background-size: cover;
+    background-position: bottom center;
     padding: 4em 1.5em 5em;
     display: flex;
     justify-content: center;
+    align-items: flex-start;
 }
 
+/* the poster: a solid dark card that sits ON TOP of the background */
 .gigs-wrap {
     width: 100%;
-    max-width: 640px;
+    max-width: 560px;
+    background: var(--primary-grey);
+    border: 1px solid rgba(251, 248, 245, 0.14);
+    padding: 3em 2.4em 2.6em;
+    color: var(--primary-white);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+    position: relative;
+}
+
+/* thin gold rule brackets — poster styling */
+.gigs-wrap::before,
+.gigs-wrap::after {
+    content: "";
+    position: absolute;
+    left: 2.4em;
+    right: 2.4em;
+    height: 1px;
+    background: var(--primary-clr);
+}
+.gigs-wrap::before { top: 1.3em; }
+.gigs-wrap::after  { bottom: 1.3em; }
+
+.gigs-kicker {
+    text-align: center;
+    font-family: albertus, Georgia, serif;
+    text-transform: uppercase;
+    letter-spacing: 0.32em;
+    font-size: 0.62em;
+    color: var(--primary-clr);
+    margin: 0 0 0.7em;
 }
 
 .gigs-wrap h2 {
     font-family: 'romens-dawn', albertus, serif;
-    font-size: 1.9em;
-    letter-spacing: 0.16em;
+    font-size: 2.2em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
     text-align: center;
-    margin: 0 0 1.4em;
+    line-height: 1;
+    margin: 0 0 1.5em;
 }
 
 .gigs-list {
     display: flex;
     flex-direction: column;
-    gap: 0.9em;
 }
 
-/* each gig is a clickable leaflet strip linking to its tickets */
+/* each gig is a clickable row inside the poster */
 .gig {
-    display: flex;
+    display: grid;
+    grid-template-columns: 4.6em 1fr auto;
     align-items: center;
-    gap: 1.4em;
-    padding: 1em 1.3em;
+    gap: 1.2em;
+    padding: 1.15em 0;
     text-decoration: none;
     color: inherit;
-    border: 1px solid rgba(251, 248, 245, 0.18);
-    background: rgba(255, 255, 255, 0.02);
-    transition: border-color 0.25s, background 0.25s, transform 0.25s;
+    border-top: 1px solid rgba(251, 248, 245, 0.14);
+    transition: color 0.25s, background 0.25s;
+}
+
+.gig:last-child {
+    border-bottom: 1px solid rgba(251, 248, 245, 0.14);
 }
 
 .gig:hover {
-    border-color: var(--primary-clr);
-    background: rgba(255, 255, 255, 0.05);
-    transform: translateY(-2px);
+    color: var(--primary-clr);
+    background: rgba(251, 248, 245, 0.03);
 }
 
 .gig-date {
-    flex: 0 0 3.4em;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     line-height: 1;
     font-family: albertus, Georgia, serif;
 }
 
 .gig-day {
-    font-size: 1.7em;
+    font-size: 2em;
     letter-spacing: 0.02em;
 }
 
 .gig-month {
     font-size: 0.62em;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
     color: var(--primary-clr);
-    margin-top: 0.4em;
+    margin-top: 0.5em;
 }
 
 .gig-info {
-    flex: 1;
     min-width: 0;
 }
 
@@ -2659,24 +2697,25 @@ body.reader-open { overflow: hidden; }
     display: block;
     font-family: albertus, Georgia, serif;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-size: 0.85em;
+    letter-spacing: 0.1em;
+    font-size: 0.9em;
+    line-height: 1.2;
 }
 
 .gig-city {
     display: block;
     font-size: 0.62em;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.08em;
     opacity: 0.7;
-    margin-top: 0.35em;
+    margin-top: 0.4em;
+    text-transform: uppercase;
 }
 
 .gig-cta {
-    flex: 0 0 auto;
     font-family: albertus, Georgia, serif;
     text-transform: uppercase;
-    letter-spacing: 0.16em;
-    font-size: 0.62em;
+    letter-spacing: 0.18em;
+    font-size: 0.6em;
     color: var(--primary-clr);
     border: 1px solid var(--primary-clr);
     padding: 0.6em 1em;
@@ -2694,7 +2733,7 @@ body.reader-open { overflow: hidden; }
     font-size: 0.85em;
     letter-spacing: 0.05em;
     opacity: 0.6;
-    padding: 2em 0;
+    padding: 1em 0;
 }
 </style>
 </head>
@@ -3458,9 +3497,46 @@ body.reader-open { overflow: hidden; }
 </div>
 <div class=" page" data-nav="top-bar" id="gigs">
     <div class="gigs-wrap">
-        <h2>Gigs</h2>
+        <p class="gigs-kicker">Tour Dates</p>
+        <h2>Live &amp; Upcoming</h2>
         <div class="gigs-list">
-            <p class="gigs-empty">No gigs announced yet &mdash; check back soon.</p>
+            
+            <a class="gig" href="https://www.example.com/tickets" target="_blank" rel="noopener">
+                <span class="gig-date">
+                    <span class="gig-day">12</span>
+                    <span class="gig-month">SEP</span>
+                </span>
+                <span class="gig-info">
+                    <span class="gig-venue">The Cluny</span>
+                    <span class="gig-city">Newcastle upon Tyne</span>
+                </span>
+                <span class="gig-cta">Tickets</span>
+            </a>
+        
+            <a class="gig" href="https://www.example.com/tickets" target="_blank" rel="noopener">
+                <span class="gig-date">
+                    <span class="gig-day">04</span>
+                    <span class="gig-month">OCT</span>
+                </span>
+                <span class="gig-info">
+                    <span class="gig-venue">The Grace</span>
+                    <span class="gig-city">London</span>
+                </span>
+                <span class="gig-cta">Tickets</span>
+            </a>
+        
+            <a class="gig" href="https://www.example.com/tickets" target="_blank" rel="noopener">
+                <span class="gig-date">
+                    <span class="gig-day">18</span>
+                    <span class="gig-month">OCT</span>
+                </span>
+                <span class="gig-info">
+                    <span class="gig-venue">Yes Basement</span>
+                    <span class="gig-city">Manchester</span>
+                </span>
+                <span class="gig-cta">Tickets</span>
+            </a>
+        
         </div>
     </div>
 </div>

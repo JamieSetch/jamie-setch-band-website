@@ -63,10 +63,10 @@
     --mono: "Courier New", ui-monospace, monospace;
     min-height: 100vh;
     box-sizing: border-box;
-    background-color: #ffffff;
-    background-image: url('/assets/starlings-signup-bg.png');
-    background-repeat: repeat;
-    background-size: 460px auto;   /* match the Music page pattern scale */
+    background-color: var(--primary-grey);
+    background-image: url('/assets/home-bg-v5.webp');
+    background-size: cover;
+    background-position: bottom center;
     display: grid;
     place-content: center;
     padding: 2em;

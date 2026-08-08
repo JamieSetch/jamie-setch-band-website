@@ -1,1 +1,23 @@
-[]
+[
+    {
+        "day": "12",
+        "month": "SEP",
+        "venue": "The Cluny",
+        "city": "Newcastle upon Tyne",
+        "tickets": "https://www.example.com/tickets"
+    },
+    {
+        "day": "04",
+        "month": "OCT",
+        "venue": "The Grace",
+        "city": "London",
+        "tickets": "https://www.example.com/tickets"
+    },
+    {
+        "day": "18",
+        "month": "OCT",
+        "venue": "Yes Basement",
+        "city": "Manchester",
+        "tickets": "https://www.example.com/tickets"
+    }
+]
