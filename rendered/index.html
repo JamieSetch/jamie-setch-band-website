@@ -741,22 +741,40 @@ nav > .nav-store > a.selected {
     display: none;                 /* home hero only (shown below) */
     position: fixed;
     right: 5vw;                    /* matches the nav text inset on the left */
-    bottom: 70px;                  /* clears the now-playing pill */
+    /* vertically centred on the name/nav block (which is flush to the bottom;
+       its half-height is ~content/2 + the 5vw padding) */
+    bottom: calc(5vw + 14px);
     width: 88px;
-    height: auto;
+    height: 69px;                  /* explicit for the mask (511:400 ratio) */
+    padding: 0;
+    border: none;
+    outline: none;                 /* no box on focus/hover */
+    /* the ring is painted as a solid colour through the mask, so it can be
+       recoloured (white by default, gold on hover) */
+    background-color: #ffffff;
+    -webkit-mask: url('assets/ring2.webp') center / contain no-repeat;
+            mask: url('assets/ring2.webp') center / contain no-repeat;
     z-index: 4;
-    pointer-events: none;
+    cursor: pointer;               /* click toggles the music */
     opacity: 0.95;
+    transition: background-color 0.25s, opacity 0.25s, transform 0.25s;
     filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.55));
+}
+
+.hero-ring:hover {
+    background-color: #e0b23c;     /* gold */
+    opacity: 1;
+    transform: scale(1.05);
 }
 
 nav[data-size="full"] .hero-ring {
     display: block;
 }
 
-/* ride up with the player when the cookie bar pushes it up */
-body.cookie-bar-open .hero-ring {
-    bottom: calc(70px + 68px);
+/* the ring replaces the play/pause player — hide the now-playing pill/panel
+   (the <audio> inside still plays; the ring drives it) */
+.now-playing {
+    display: none !important;
 }#music {
     /* exactly fills the viewport below the nav — page never scrolls */
     height: calc(100vh - 74px);
@@ -2661,7 +2679,7 @@ body.reader-open { overflow: hidden; }
                 </div>
                 <audio src="assets/music1.mp3" class="hidden" volume="SONG_VOLUME"></audio>
             </div>
-            <img class="hero-ring" src="assets/ring2.webp" alt="">
+            <button class="hero-ring" type="button" aria-label="Play or pause music" onclick="event.stopPropagation(); site.toggleMusic()"></button>
         </nav>
         <div class=" page" data-nav="full" id="home">
 </div><div class=" hidden  page" data-nav="top-bar" id="about-me">

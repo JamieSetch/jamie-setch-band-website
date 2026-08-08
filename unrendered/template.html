@@ -64,7 +64,7 @@
                 </div>
                 <audio src="{{SONG_FILE}}" class="hidden" volume="SONG_VOLUME"></audio>
             </div>
-            <img class="hero-ring" src="assets/ring2.webp" alt="">
+            <button class="hero-ring" type="button" aria-label="Play or pause music" onclick="event.stopPropagation(); site.toggleMusic()"></button>
         </nav>
         {{MAIN_CONTENT}}
     </main>
