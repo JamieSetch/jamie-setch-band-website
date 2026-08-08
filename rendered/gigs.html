@@ -771,11 +771,13 @@ nav[data-size="full"] .hero-ring {
     display: block;
 }
 
-/* Phone: shrink the ring so it doesn't compete with the wordmark */
+/* Phone: shrink the ring and centre it vertically on the "JAMIE SETCH"
+   wordmark (the nav links are hidden on mobile, so only h1 is visible) */
 @media (max-width: 800px) {
     .hero-ring {
         width: 56px;
         height: 44px;
+        bottom: calc(5vw + 15px);
     }
 }
 
