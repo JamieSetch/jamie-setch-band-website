@@ -733,7 +733,7 @@ nav > .nav-store > a.selected {
     right: 5vw;                    /* matches the nav text inset on the left */
     /* vertically centred on the name/nav block (which is flush to the bottom;
        its half-height is ~content/2 + the 5vw padding) */
-    bottom: calc(5vw + 14px);
+    bottom: calc(5vw + 8px);
     width: 88px;
     height: 69px;                  /* explicit for the mask (511:400 ratio) */
     padding: 0;
