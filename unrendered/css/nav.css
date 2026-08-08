@@ -752,7 +752,7 @@ nav > .nav-store > a.selected {
 }
 
 .hero-ring:hover {
-    background-color: #e0b23c;     /* gold */
+    background-color: var(--primary-clr);   /* site gold/yellow (matches nav hover) */
     opacity: 1;
     transform: scale(1.05);
 }

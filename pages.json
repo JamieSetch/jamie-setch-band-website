@@ -25,6 +25,11 @@
         "show-nav": "top-bar"
     },
     {
+        "id": "gigs",
+        "name": "Gigs",
+        "show-nav": "top-bar"
+    },
+    {
         "id": "store",
         "name": "Store",
         "show-nav": "top-bar"

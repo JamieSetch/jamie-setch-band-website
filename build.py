@@ -80,6 +80,34 @@ def get_store_html():
     return cards, panels
 
 
+def get_gigs_html():
+    f = open('items/gigs.json')
+    gigs = json.load(f)
+    f.close()
+
+    # empty state until gigs are added to items/gigs.json
+    if not gigs:
+        return '<p class="gigs-empty">No gigs announced yet &mdash; check back soon.</p>'
+
+    rows = ''
+    for gig in gigs:
+        link = gig.get('tickets') or '#'
+        rows += f'''
+            <a class="gig" href="{link}" target="_blank" rel="noopener">
+                <span class="gig-date">
+                    <span class="gig-day">{gig['day']}</span>
+                    <span class="gig-month">{gig['month']}</span>
+                </span>
+                <span class="gig-info">
+                    <span class="gig-venue">{gig['venue']}</span>
+                    <span class="gig-city">{gig['city']}</span>
+                </span>
+                <span class="gig-cta">Tickets</span>
+            </a>
+        '''
+    return rows
+
+
 def build():
     f = open('pages.json')
     pages = json.load(f)
@@ -93,7 +121,7 @@ def build():
     template = f.read()
     f.close()
 
-    cssFiles = ['nav.css', 'music.css', 'store.css', 'sign-up.css', 'side-quests.css', 'work.css', 'about-me.css', 'epk.css']
+    cssFiles = ['nav.css', 'music.css', 'store.css', 'sign-up.css', 'side-quests.css', 'work.css', 'about-me.css', 'epk.css', 'gigs.css']
 
     css = ''
     for file in cssFiles:
@@ -145,6 +173,8 @@ def build():
         if page['id'] == 'store':
             store_cards, store_panels = get_store_html()
             contents = contents.replace('{{STORE_ITEMS}}', store_cards).replace('{{STORE_PRODUCTS}}', store_panels)
+        if page['id'] == 'gigs':
+            contents = contents.replace('{{GIGS}}', get_gigs_html())
         pageContents[page['id']] = contents
         f.close()
 

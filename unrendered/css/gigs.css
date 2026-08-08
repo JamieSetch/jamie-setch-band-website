@@ -1,0 +1,118 @@
+/* ── Gigs — centred, poster/leaflet-style list of upcoming shows ─── */
+#gigs {
+    min-height: calc(100vh - 74px);
+    box-sizing: border-box;
+    background-color: var(--primary-grey);
+    color: var(--primary-white);
+    padding: 4em 1.5em 5em;
+    display: flex;
+    justify-content: center;
+}
+
+.gigs-wrap {
+    width: 100%;
+    max-width: 640px;
+}
+
+.gigs-wrap h2 {
+    font-family: 'romens-dawn', albertus, serif;
+    font-size: 1.9em;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    text-align: center;
+    margin: 0 0 1.4em;
+}
+
+.gigs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9em;
+}
+
+/* each gig is a clickable leaflet strip linking to its tickets */
+.gig {
+    display: flex;
+    align-items: center;
+    gap: 1.4em;
+    padding: 1em 1.3em;
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid rgba(251, 248, 245, 0.18);
+    background: rgba(255, 255, 255, 0.02);
+    transition: border-color 0.25s, background 0.25s, transform 0.25s;
+}
+
+.gig:hover {
+    border-color: var(--primary-clr);
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateY(-2px);
+}
+
+.gig-date {
+    flex: 0 0 3.4em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1;
+    font-family: albertus, Georgia, serif;
+}
+
+.gig-day {
+    font-size: 1.7em;
+    letter-spacing: 0.02em;
+}
+
+.gig-month {
+    font-size: 0.62em;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--primary-clr);
+    margin-top: 0.4em;
+}
+
+.gig-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.gig-venue {
+    display: block;
+    font-family: albertus, Georgia, serif;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.85em;
+}
+
+.gig-city {
+    display: block;
+    font-size: 0.62em;
+    letter-spacing: 0.06em;
+    opacity: 0.7;
+    margin-top: 0.35em;
+}
+
+.gig-cta {
+    flex: 0 0 auto;
+    font-family: albertus, Georgia, serif;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-size: 0.62em;
+    color: var(--primary-clr);
+    border: 1px solid var(--primary-clr);
+    padding: 0.6em 1em;
+    transition: background 0.25s, color 0.25s;
+}
+
+.gig:hover .gig-cta {
+    background: var(--primary-clr);
+    color: var(--primary-grey);
+}
+
+.gigs-empty {
+    text-align: center;
+    font-family: albertus, Georgia, serif;
+    font-size: 0.85em;
+    letter-spacing: 0.05em;
+    opacity: 0.6;
+    padding: 2em 0;
+}
